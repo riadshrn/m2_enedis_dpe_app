@@ -66,9 +66,12 @@ Chaque fichier correspond à une étape du nettoyage, de la fusion ou de la pré
 
 ```mermaid
 graph LR
+P[IRIS_RHONE  data.grandlyon] --> C
 B[df_adem_existant_69.csv] --> D[df_adem_merge_69.csv]
 F[df_adem_neuf_69.csv] --> D --> C[df_adem_cleaned_69.csv]
-C --> H[Analyse & Modélisation DPE]
+C --> S[df_adem_enedis_iris_69.csv]
+S --> H[Analyse & Modélisation DPE]
 X[df_enedis_69.csv] --> Y[enedis_69_cleanned.csv]
-Y --> H
+Y --> S
+
 ```
