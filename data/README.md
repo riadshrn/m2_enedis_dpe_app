@@ -11,7 +11,7 @@ Chaque fichier correspond à une étape du nettoyage, de la fusion ou de la pré
 
 ```mermaid
 graph LR
-P[IRIS_RHONE  data.grandlyon] --> C
+P[IRIS_RHONE  data.grandlyon] -. [jointure spatiale] .-> C
 B[df_adem_existant_69.csv] --> D[df_adem_merge_69.csv]
 F[df_adem_neuf_69.csv] --> D --> C[df_adem_cleaned_69.csv]
 C --> S[df_adem_enedis_iris_69.csv]
