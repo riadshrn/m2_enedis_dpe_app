@@ -8,3 +8,5 @@ data/IRIS_Rhone/*.cst
 data/IRIS_Rhone/*.cpg
 data/IRIS_Rhone/*.qpj
 data/IRIS_Rhone/*.shp.xml
+
+data/Prepared/*.csv
