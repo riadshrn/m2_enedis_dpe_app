@@ -62,6 +62,24 @@ Chaque fichier correspond à une étape du nettoyage, de la fusion ou de la pré
 
 ---
 
+### `/IRIS_Rhone/`
+- Dossier contenant le **shapefile des IRIS (contours géographiques)** pour la Métropole de Lyon et le département du Rhône.  
+- Source officielle : [Contours IRIS Grande Échelle - Métropole de Lyon](https://data.grandlyon.com/portail/fr/jeux-de-donnees/contours-iris-grande-echelle-metropole-lyon/telechargements).  
+- Fichiers principaux :  
+  - `ter_territoire_teriris_ge_latest.shp`, `.dbf`, `.shx`, `.prj`, `.cst`, etc.  
+- Utilisé pour effectuer la **jointure spatiale** entre les logements ADEME et les zones IRIS.
+
+---
+
+### `df_adem_enedis_iris_69.csv`
+- Fichier **final enrichi** après fusion ADEME × Enedis via le code IRIS.  
+- Chaque logement ADEME est associé :
+  - à son **IRIS géographique** (via la jointure spatiale),
+  - aux **indicateurs de consommation Enedis** correspondants (moyenne et totale).  
+- Ce dataset constitue la **base principale pour l’analyse et la modélisation**.
+
+---
+
 ## Flux de traitement
 
 ```mermaid
