@@ -1,1 +1,10 @@
 data/*.csv
+
+data/IRIS_Rhone/*.shp
+data/IRIS_Rhone/*.shx
+data/IRIS_Rhone/*.dbf
+data/IRIS_Rhone/*.prj
+data/IRIS_Rhone/*.cst
+data/IRIS_Rhone/*.cpg
+data/IRIS_Rhone/*.qpj
+data/IRIS_Rhone/*.shp.xml
