@@ -10,3 +10,4 @@ data/IRIS_Rhone/*.qpj
 data/IRIS_Rhone/*.shp.xml
 
 data/Prepared/*.csv
+models/*.joblib
