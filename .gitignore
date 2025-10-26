@@ -16,3 +16,5 @@ models/*.joblib
 models/DPE-Sans Conso/*.joblib
 models/Conso/*.joblib
 models/DPE-Avec Conso/*.joblib
+
+models/Compressed/*.joblib
