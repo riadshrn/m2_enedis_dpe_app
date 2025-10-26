@@ -11,3 +11,7 @@ data/IRIS_Rhone/*.shp.xml
 
 data/Prepared/*.csv
 models/*.joblib
+
+
+models/DPE-Sans Conso/*.joblib
+models/Conso/*.joblib
