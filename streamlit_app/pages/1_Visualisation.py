@@ -25,6 +25,32 @@ def load_css():
 
 load_css()
 
+# ==================== SIDEBAR ====================
+with st.sidebar:
+    st.markdown("""
+    <div style='text-align: center; padding: 1rem 0 2rem 0;'>
+        <h1 style='font-size: 1.8rem; margin: 0;'>🏡 DPE Rhône 69</h1>
+        <p style='font-size: 0.9rem; margin-top: 0.4rem; opacity: 0.85;'>Analyse & Prédiction Énergétique</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    st.markdown("""
+    <div style='font-size: 0.85rem; padding: 0 0.5rem;'>
+        <p><strong>📊 Sources de données :</strong></p>
+        <ul style='margin-left: 1rem; line-height: 1.8;'>
+            <li>ADEME (DPE)</li>
+            <li>Enedis (Rhône 69)</li>
+        </ul>
+        <p style='margin-top: 1.5rem;'><strong>🛠️ Technologies :</strong></p>
+        <ul style='margin-left: 1rem; line-height: 1.8;'>
+            <li>FastAPI + Mistral AI</li>
+            <li>Streamlit + Plotly</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ==================== PAGE ====================
 st.markdown("""
 <div class="main-header fade-in">
