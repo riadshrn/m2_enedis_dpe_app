@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from functools import lru_cache
 import json
+from pathlib import Path
+import pandas as pd
+
 
 # ✅ on va lire la ressource depuis le package "app.data"
 try:
@@ -89,3 +92,43 @@ def get_options_for(key: str):
     if key not in lists:
         raise HTTPException(status_code=404, detail=f"Clé inconnue: {key}")
     return {key: lists[key]}
+
+
+# === Communes du Rhône ===
+COMMUNES_PATH = Path(__file__).resolve().parents[1] / "data" / "conso_communes_rhone.csv"
+
+@lru_cache()
+def load_communes_df() -> pd.DataFrame:
+    """
+    Charge le fichier des communes du Rhône en mémoire (cache ldf pour accélérer les requêtes).
+    """
+    if not COMMUNES_PATH.exists():
+        raise FileNotFoundError(f"Fichier introuvable: {COMMUNES_PATH}")
+    df = pd.read_csv(COMMUNES_PATH, dtype=str)
+    # Normalisation
+    df.columns = [c.lower().strip() for c in df.columns]
+    if "nom_commune" not in df.columns:
+        raise ValueError("La colonne 'nom_commune' est manquante dans le CSV.")
+    df["nom_commune_norm"] = df["nom_commune"].str.strip().str.lower()
+    return df
+
+@router.get("/communes")
+def get_communes(search: str = None, limit: int = 15):
+    """
+    Renvoie la liste des communes du Rhône (auto-complétion facultative).
+    - search: texte à chercher (insensible à la casse)
+    - limit: nombre max de résultats
+    """
+    try:
+        df = load_communes_df()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de lecture du fichier communes : {e}")
+
+    if search:
+        search_norm = search.strip().lower()
+        mask = df["nom_commune_norm"].str.contains(search_norm, na=False)
+        results = df.loc[mask, "nom_commune"].head(limit).tolist()
+    else:
+        results = df["nom_commune"].head(limit).tolist()
+
+    return {"count": len(results), "communes": results}
