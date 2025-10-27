@@ -70,16 +70,22 @@ FALLBACK_VALUE_LISTS = {
 @lru_cache()
 def load_value_lists() -> dict:
     """
-    Charge app/data/value_lists.json depuis le package.
+    Charge app/data/value_lists.json directement depuis le chemin du projet.
     Si le fichier est introuvable ou illisible, renvoie les valeurs de FALLBACK_VALUE_LISTS.
     """
     try:
-        resource = files("app.data").joinpath("value_lists.json")
-        text = resource.read_text(encoding="utf-8")
-        return json.loads(text)
+        # Résolution du chemin absolu depuis le fichier courant
+        resource = Path(__file__).resolve().parents[1] / "data" / "value_lists.json"
+
+        # Vérification d’existence et lecture
+        if not resource.exists():
+            raise FileNotFoundError(f"Fichier introuvable : {resource}")
+
+        with open(resource, "r", encoding="utf-8") as f:
+            return json.load(f)
+
     except Exception as e:
-        # Log utile en dev, mais on renvoie un fallback pour que l’UI continue de fonctionner
-        print(f"[metadata] WARNING: impossible de lire value_lists.json ({e}). Fallback utilisé.")
+        print(f"[metadata] ⚠️ Impossible de lire value_lists.json ({e}). Fallback utilisé.")
         return FALLBACK_VALUE_LISTS
 
 @router.get("/options")
