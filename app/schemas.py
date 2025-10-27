@@ -16,6 +16,7 @@ class BaseFeatures(BaseModel):
     energie_regroupee: str
     type_logement_source: str
     classe_annee_construction: str
+    surface_habitable_logement: float
 
 # Modèle pour prédiction DPE sans conso
 class DpeSansConsoFeatures(BaseFeatures):
@@ -64,6 +65,7 @@ class ConsoFeatures(BaseFeatures):
     energie_regroupee: str
     type_logement_source: str
     classe_annee_construction: str
+    surface_habitable_logement: float
     pass
 
 # Pour l’interprétation (appel Mistral)
@@ -80,6 +82,7 @@ class InterpretationRequest(BaseModel):
     energie_regroupee: str
     type_logement_source: str
     classe_annee_construction: str
-    conso_m2: Optional[float] = None
+    surface_habitable_logement: float  
+    conso_m2: float                    
     etiquette_dpe_regroupee: Optional[str] = None
     nom_commune: Optional[str] = None   

@@ -8,8 +8,11 @@ router = APIRouter(prefix="/interpretation", tags=["LLM Interprétation"])
 @router.post("/")
 def interpret_result(data: InterpretationRequest):
     commune_info = ""
-    
-    # Si la commune est renseignée, on cherche ses données dans le CSV
+
+    # Calcul de la conso totale à partir de la surface
+    conso_totale_mwh = (data.conso_m2 * data.surface_habitable_logement) / 1000
+
+    # --- Recherche des données de la commune ---
     if data.nom_commune:
         commune_name = data.nom_commune.strip().upper()
         if not df_communes.empty and commune_name in df_communes["nom_commune"].unique():
@@ -19,19 +22,19 @@ def interpret_result(data: InterpretationRequest):
 
             commune_info = (
                 f"Dans la commune de {commune_name}, la consommation énergétique moyenne "
-                f"est de {moyenne:.2f} MWh/an. Cette commune est classée '{classe}' en termes "
-                f"de consommation énergétique moyenne.\n"
-                f"Votre logement consomme {data.conso_m2} kWh/m², "
-                f"donc vous êtes {'en dessous' if data.conso_m2 < moyenne else 'au-dessus'} "
-                f"de la moyenne communale.\n\n"
+                f"est de {moyenne:.2f} MWh/an. Cette commune est classée '{classe}'.\n"
+                f"Votre logement consomme environ {conso_totale_mwh:.2f} MWh/an "
+                f"({data.conso_m2} kWh/m² pour {data.surface_habitable_logement} m²), "
+                f"soit {'en dessous' if conso_totale_mwh < moyenne else 'au-dessus'} de la moyenne communale.\n\n"
             )
         else:
             commune_info = f"Aucune donnée énergétique trouvée pour la commune '{commune_name}'.\n\n"
 
-    # Construction du prompt enrichi
+    # --- Construction du prompt enrichi ---
     prompt = (
         f"{commune_info}"
         f"Voici les caractéristiques du logement :\n"
+        f"- Surface habitable : {data.surface_habitable_logement} m²\n"
         f"- Volume du logement : {data.volume_logement} m³\n"
         f"- Hauteur sous plafond : {data.hauteur_sous_plafond} m\n"
         f"- Nombre de niveaux : {data.nombre_niveau_logement}\n"
@@ -49,21 +52,20 @@ def interpret_result(data: InterpretationRequest):
         f"Explique de manière claire, synthétique et pédagogique ce que signifient ces résultats "
         f"en tenant compte du contexte énergétique local de la commune du Rhône. "
         f"Détaille uniquement :\n"
-        f"1 L’analyse du logement et de sa performance énergétique.\n"
-        f"2 Les points forts et faibles du logement.\n"
-        f"3 Les pistes d’amélioration possibles (isolation, chauffage, énergies renouvelables).\n"
-        f"4 Une conclusion claire.\n\n"
+        f"01. L’analyse du logement et de sa performance énergétique.\n"
+        f"02. Les points forts et faibles du logement.\n"
+        f"03. Les pistes d’amélioration possibles (isolation, chauffage, énergies renouvelables).\n"
+        f"04. Une conclusion claire.\n\n"
         f"!!!!!! Ne propose pas d’audit énergétique, de diagnostic ou de contact professionnel. "
         f"Ne mentionne pas de services externes ou d’aides financières. "
         f"Ne conclus pas par une phrase publicitaire, seulement par une synthèse finale du résultat."
     )
 
-
-    # Appel au LLM Mistral
     interpretation = get_interpretation(prompt)
 
     return {
         "commune": data.nom_commune,
+        "conso_totale_mwh": round(conso_totale_mwh, 2),
         "prompt_envoye": prompt,
         "interpretation": interpretation
     }
