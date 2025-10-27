@@ -1,0 +1,51 @@
+{
+  "isolation_toiture": [
+    "0.0",
+    "1.0"
+  ],
+  "qualite_isolation_murs": [
+    "BONNE",
+    "INSUFFISANTE",
+    "MOYENNE",
+    "TRÈS BONNE"
+  ],
+  "qualite_isolation_menuiseries": [
+    "BONNE",
+    "INSUFFISANTE",
+    "MOYENNE",
+    "TRÈS BONNE"
+  ],
+  "type_energie_principale_chauffage": [
+    "BOIS – BÛCHES",
+    "BOIS – GRANULÉS (PELLETS) OU BRIQUETTES",
+    "BOIS – PLAQUETTES D’INDUSTRIE",
+    "BOIS – PLAQUETTES FORESTIÈRES",
+    "CHARBON",
+    "FIOUL DOMESTIQUE",
+    "GAZ NATUREL",
+    "GPL",
+    "PROPANE",
+    "RÉSEAU DE CHAUFFAGE URBAIN",
+    "ÉLECTRICITÉ",
+    "ÉLECTRICITÉ D'ORIGINE RENOUVELABLE UTILISÉE DANS LE BÂTIMENT"
+  ],
+  "energie_regroupee": [
+    "autre",
+    "bois",
+    "electrique",
+    "fioul",
+    "gaz"
+  ],
+  "type_logement_source": [
+    "EXISTANT",
+    "NEUF"
+  ],
+  "classe_annee_construction": [
+    "1949_1974",
+    "1975_1989",
+    "1990_1999",
+    "2000_2011",
+    "apres_2012",
+    "avant_1948"
+  ]
+}
