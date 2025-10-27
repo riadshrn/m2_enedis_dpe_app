@@ -58,8 +58,7 @@ def load_value_lists():
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        st.warning(f"⚠️ Impossible de charger les listes depuis l’API ({e}). Fallback local utilisé.")
-        # Fallback local (identique à ton JSON)
+        # Fallback local
         return {
             "isolation_toiture": ["0", "1"],
             "qualite_isolation_murs": ["BONNE", "INSUFFISANTE", "MOYENNE", "TRÈS BONNE"],
