@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from app.mistral_client import get_interpretation
-from app.schemas import InterpretationRequest
-from app.data_loader import df_communes
+from mistral_client import get_interpretation
+from schemas import InterpretationRequest
+from data_loader import df_communes
 
 router = APIRouter(prefix="/interpretation", tags=["LLM Interprétation"])
 

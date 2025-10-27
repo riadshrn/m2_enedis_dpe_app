@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import (
+from routes import (
     dpe_sans_conso,
     dpe_avec_conso,
     conso,

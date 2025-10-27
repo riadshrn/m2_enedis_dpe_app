@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import pandas as pd
-from app.models_loader import models
-from app.schemas import ConsoFeatures  # 🧩 pour inclure surface_habitable_logement
+from models_loader import models
+from schemas import ConsoFeatures  
 
 router = APIRouter(prefix="/predict", tags=["DPE auto (avec conso prédite)"])
 
