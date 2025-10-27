@@ -2,6 +2,7 @@ import streamlit as st
 from pathlib import Path
 import sys
 import time
+import requests
 
 # === Imports internes ===
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -18,6 +19,51 @@ def load_css():
         with open(css_file) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 load_css()
+
+# === API Base URL ===
+API_BASE = "http://localhost:8000"
+
+# === Charger les listes dynamiques depuis FastAPI ===
+@st.cache_data(show_spinner=False)
+def load_value_lists():
+    try:
+        r = requests.get(f"{API_BASE}/metadata/options", timeout=5)
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        st.warning(f"⚠️ Impossible de charger les listes depuis l’API ({e}). Fallback local utilisé.")
+        # Fallback local (identique à ton JSON)
+        return {
+            "isolation_toiture": ["0", "1"],
+            "qualite_isolation_murs": ["BONNE", "INSUFFISANTE", "MOYENNE", "TRÈS BONNE"],
+            "qualite_isolation_menuiseries": ["BONNE", "INSUFFISANTE", "MOYENNE", "TRÈS BONNE"],
+            "type_energie_principale_chauffage": [
+                "BOIS – BÛCHES",
+                "BOIS – GRANULÉS (PELLETS) OU BRIQUETTES",
+                "BOIS – PLAQUETTES D’INDUSTRIE",
+                "BOIS – PLAQUETTES FORESTIÈRES",
+                "CHARBON",
+                "FIOUL DOMESTIQUE",
+                "GAZ NATUREL",
+                "GPL",
+                "PROPANE",
+                "RÉSEAU DE CHAUFFAGE URBAIN",
+                "ÉLECTRICITÉ",
+                "ÉLECTRICITÉ D'ORIGINE RENOUVELABLE UTILISÉE DANS LE BÂTIMENT"
+            ],
+            "energie_regroupee": ["autre", "bois", "electrique", "fioul", "gaz"],
+            "type_logement_source": ["EXISTANT", "NEUF"],
+            "classe_annee_construction": [
+                "avant_1948",
+                "1949_1974",
+                "1975_1989",
+                "1990_1999",
+                "2000_2010",
+                "apres_2012"
+            ]
+        }
+
+VALUE_LISTS = load_value_lists()
 
 # === Initialisation session_state ===
 if "prediction" not in st.session_state:
@@ -62,23 +108,21 @@ with col1:
     hauteur_sous_plafond = st.number_input("Hauteur sous plafond (m)", 2.0, 4.0, 2.6)
     nombre_niveau_logement = st.number_input("Nombre de niveaux", 1, 5, 1)
     anciennete = st.number_input("Ancienneté du bâtiment (en années)", 0, 200, 15)
-    isolation_toiture = st.selectbox("Isolation toiture", ["0", "1"])
+    isolation_toiture = st.selectbox("Isolation toiture", VALUE_LISTS["isolation_toiture"])
 
 with col2:
     score_isolation_moyen = st.number_input("Score d’isolation moyen (0 à 1)", 0.0, 1.0, 1.0)
-    qualite_isolation_murs = st.selectbox("Qualité isolation murs", ["très bonne", "bonne", "moyenne", "insuffisante"])
-    qualite_isolation_menuiseries = st.selectbox("Qualité isolation menuiseries", ["très bonne", "bonne", "moyenne", "insuffisante"])
-    type_energie_principale_chauffage = st.selectbox("Énergie principale de chauffage", ["gaz", "électricité", "fioul", "bois", "pompe à chaleur"])
-    type_logement_source = st.selectbox("Type de logement", ["maison", "appartement"])
+    qualite_isolation_murs = st.selectbox("Qualité isolation murs", VALUE_LISTS["qualite_isolation_murs"])
+    qualite_isolation_menuiseries = st.selectbox("Qualité isolation menuiseries", VALUE_LISTS["qualite_isolation_menuiseries"])
+    type_energie_principale_chauffage = st.selectbox("Énergie principale de chauffage", VALUE_LISTS["type_energie_principale_chauffage"])
+    type_logement_source = st.selectbox("Type de logement", VALUE_LISTS["type_logement_source"])
 
 st.markdown("---")
 
 col1, col2 = st.columns(2)
 with col1:
-    energie_regroupee = st.selectbox("Énergie regroupée", ["gaz_naturel", "electrique", "bois", "fioul"])
-    classe_annee_construction = st.selectbox("Classe d’année de construction", [
-        "avant_1948", "1949_1974", "1975_1989", "1990_1999", "2000_2010", "apres_2012"
-    ])
+    energie_regroupee = st.selectbox("Énergie regroupée", VALUE_LISTS["energie_regroupee"])
+    classe_annee_construction = st.selectbox("Classe d’année de construction", VALUE_LISTS["classe_annee_construction"])
 with col2:
     knows_conso = False
     conso_m2 = 0.0
@@ -113,18 +157,16 @@ if st.session_state.mode_pred == "simple":
     if st.button("🚀 Prédire uniquement l'étiquette DPE", use_container_width=True):
         with st.spinner("Calcul en cours..."):
             result = call_api("/predict/dpe_sans_conso", base_data)
-
             if result:
                 etiquette = result.get("etiquette_dpe", "N/A")
                 st.session_state.prediction = {
                     "etiquette": etiquette,
                     "mode": "simple"
                 }
-
                 st.success(f"✅ Étiquette prédite : **{etiquette}** (basée uniquement sur les caractéristiques)")
                 st.markdown(display_dpe_badge(etiquette), unsafe_allow_html=True)
                 st.plotly_chart(create_dpe_gauge(etiquette), use_container_width=True)
-    st.stop()  # pas d’interprétation pour ce mode
+    st.stop()
 
 # === MODE COMPLET ===
 st.markdown("---")
@@ -200,7 +242,6 @@ if st.button("🧠 Générer l’interprétation détaillée", use_container_wid
             }
 
             result = call_api("/interpretation", interpretation_data)
-
             if result:
                 interpretation = result.get("interpretation", "")
                 commune_res = result.get("commune", "")
