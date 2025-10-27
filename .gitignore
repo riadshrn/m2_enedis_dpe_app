@@ -18,3 +18,8 @@ models/Conso/*.joblib
 models/DPE-Avec Conso/*.joblib
 
 models/Compressed/*.joblib
+
+app/models/Compressed/*.joblib
+
+*.pyc
+__pycache__/
