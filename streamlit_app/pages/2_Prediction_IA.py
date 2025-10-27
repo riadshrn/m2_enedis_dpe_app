@@ -100,7 +100,31 @@ if not st.session_state.mode_pred:
 st.markdown("---")
 st.markdown("### 🏡 Informations sur le logement")
 
-commune = st.text_input("Commune (Rhône)", value="Lyon")
+@st.cache_data(ttl=600)
+def fetch_communes(search_text=""):
+    try:
+        url = f"{API_BASE}/metadata/communes"
+        if search_text:
+            url += f"?search={search_text}"
+        r = requests.get(url, timeout=5)
+        r.raise_for_status()
+        return r.json().get("communes", [])
+    except Exception:
+        return []
+
+commune_input = st.text_input("Tapez le nom de la commune (Rhône)", value="Lyon")
+
+# Suggestions automatiques
+if commune_input:
+    communes_list = fetch_communes(commune_input)
+    if communes_list:
+        commune = st.selectbox("🔍 Sélectionnez votre commune :", communes_list, index=0)
+    else:
+        st.warning("Aucune commune trouvée pour cette recherche.")
+        commune = commune_input
+else:
+    commune = "Lyon"
+
 
 col1, col2 = st.columns(2)
 with col1:
