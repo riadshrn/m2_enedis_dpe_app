@@ -5,17 +5,37 @@ from routes import (
     conso,
     dpe_auto,
     interpretation,
-    metadata
+    metadata,
+    data_viz
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="API DPE / Consommation ENEDIS")
+
+
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 app.include_router(dpe_sans_conso.router)
 app.include_router(dpe_avec_conso.router)
 app.include_router(conso.router)
 app.include_router(dpe_auto.router)
+
 app.include_router(interpretation.router)
+
+app.include_router(data_viz.router)
+
 app.include_router(metadata.router)
+
 
 @app.get("/")
 def home():
