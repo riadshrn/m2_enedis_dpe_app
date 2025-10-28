@@ -2,8 +2,8 @@ import requests
 import streamlit as st
 
 # URL de votre API FastAPI
-API_BASE_URL = "https://riadshrn-api-dpe-conso.hf.space"  
-#API_BASE_URL = "http://localhost:8000"
+#API_BASE_URL = "https://riadshrn-api-dpe-conso.hf.space"  
+API_BASE_URL = "http://localhost:8000"
 #API_BASE_URL = "http://dpe-api:8000"
 
 def call_api(endpoint: str, data: dict):
