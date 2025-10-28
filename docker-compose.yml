@@ -1,0 +1,18 @@
+services:
+  api:
+    build: ./app
+    container_name: dpe-api
+    ports:
+      - "8000:8000"
+    restart: always
+
+  streamlit:
+    build: ./streamlit_app
+    container_name: dpe-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE_URL=http://dpe-api:8000
+    depends_on:
+      - api
+    restart: always

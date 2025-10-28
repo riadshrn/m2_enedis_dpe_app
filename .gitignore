@@ -1,0 +1,25 @@
+data/*.csv
+
+data/IRIS_Rhone/*.shp
+data/IRIS_Rhone/*.shx
+data/IRIS_Rhone/*.dbf
+data/IRIS_Rhone/*.prj
+data/IRIS_Rhone/*.cst
+data/IRIS_Rhone/*.cpg
+data/IRIS_Rhone/*.qpj
+data/IRIS_Rhone/*.shp.xml
+
+data/Prepared/*.csv
+models/*.joblib
+
+
+models/DPE-Sans Conso/*.joblib
+models/Conso/*.joblib
+models/DPE-Avec Conso/*.joblib
+
+models/Compressed/*.joblib
+
+app/models/Compressed/*.joblib
+
+*.pyc
+__pycache__/
