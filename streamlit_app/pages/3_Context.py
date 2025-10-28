@@ -169,51 +169,7 @@ def show():
 
     # ==================== AFFICHAGE DU TABLEAU ====================
     st.subheader("📋 Tableau des logements filtrés")
-    st.dataframe(filtered_df, use_container_width=True, height=500)
-
-    # ==================== GRAPHIQUE RAPIDE ====================
-    with st.expander("📈 Visualisation des classes DPE par commune"):
-        if "nom_commune_ban" in filtered_df.columns:
-            # Compter le nombre de logements par commune et par classe DPE
-            dpe_chart = (
-                filtered_df.groupby(["nom_commune_ban", "etiquette_dpe", "color_dpe"])
-                .size()
-                .reset_index(name="count")
-            )
-
-            # Trier les classes DPE dans l’ordre A→G
-            dpe_chart["etiquette_dpe"] = pd.Categorical(
-                dpe_chart["etiquette_dpe"],
-                categories=["A", "B", "C", "D", "E", "F", "G"],
-                ordered=True,
-            )
-
-            # Créer une palette de couleurs depuis color_dpe
-            color_map = {
-                row["etiquette_dpe"]: row["color_dpe"]
-                for _, row in dpe_chart.drop_duplicates("etiquette_dpe").iterrows()
-            }
-
-            import plotly.express as px
-
-            fig = px.bar(
-                dpe_chart,
-                x="nom_commune_ban",
-                y="count",
-                color="etiquette_dpe",
-                color_discrete_map=color_map,  # 🎨 ta palette issue de color_dpe
-                title="Répartition des classes DPE par commune",
-            )
-
-            fig.update_layout(
-                xaxis_title="Commune",
-                yaxis_title="Nombre de logements",
-                legend_title="Classe DPE",
-                title_x=0.5,
-                bargap=0.2,
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
+    st.dataframe(filtered_df, use_container_width=True, height=700)
 
 
 # Permet d’exécuter directement la page localement
