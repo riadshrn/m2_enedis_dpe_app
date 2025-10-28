@@ -2,7 +2,8 @@
 import joblib
 from pathlib import Path
 
-MODELS_PATH = Path(__file__).resolve().parent.parent / "models" / "Compressed"
+#MODELS_PATH = Path(__file__).resolve().parent.parent / "models" / "Compressed"
+MODELS_PATH = Path(__file__).resolve().parent.parent / "app" / "models" / "Compressed"
 
 print("Chargement des modèles compressés...")
 

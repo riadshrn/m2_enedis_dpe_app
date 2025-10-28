@@ -48,7 +48,8 @@ with st.sidebar:
 
 
 # === API Base URL ===
-API_BASE = "http://localhost:8000"
+API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
+#API_BASE = "http://localhost:8000"
 
 # === Charger les listes dynamiques depuis FastAPI ===
 @st.cache_data(show_spinner=False)
@@ -291,7 +292,7 @@ if st.button("🧠 Générer l’interprétation détaillée", use_container_wid
                 "nom_commune": commune
             }
 
-            result = call_api("/interpretation", interpretation_data)
+            result = call_api("/interpretation/", interpretation_data)
             if result:
                 interpretation = result.get("interpretation", "")
                 commune_res = result.get("commune", "")
