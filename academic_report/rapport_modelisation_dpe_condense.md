@@ -38,10 +38,10 @@ L'étude développe une **architecture modulaire à trois modèles complémentai
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    SOURCES DE DONNÉES                           │
-├──────────────────┬──────────────────┬──────────────────────────┤
-│  df_adem_69.csv  │ df_adem_neuf.csv │    df_enedis_69.csv     │
-│    n=321,548     │    n=36,754      │      n=2,847            │
-└────────┬─────────┴────────┬─────────┴──────────┬───────────────┘
+├──────────────────┬──────────────────┬───────────────────────────┤
+│  df_adem_69.csv  │ df_adem_neuf.csv │      df_enedis_69.csv     │
+│    n=321,548     │    n=36,754      │        n=2,847            │
+└────────┬─────────┴────────┬─────────┴──────────┬────────────────┘
          │                  │                    │
          └──────────┬───────┘                    │
                     ↓                            ↓
@@ -74,7 +74,7 @@ L'étude développe une **architecture modulaire à trois modèles complémentai
 
 **Résultat** : Exclusion de 2.7% du dataset initial (9 456 observations).
 
-### 2.3 Variables Créées (Feature Engineering)
+### 2.3 Variables Créées 
 
 **Variables temporelles** :
 ```python
@@ -145,7 +145,6 @@ Quatre algorithmes ont été évalués avec gestion du déséquilibre via **SMOT
 **Observations** :
 - Random Forest surpasse tous les autres algorithmes avec +26.67 points vs Arbre Simple
 - Gradient Boosting sous-performe de façon surprenante (-16.48 points F1 vs Random Forest)
-- Les modèles linéaires sont inadaptés à cette tâche (74.35% accuracy)
 
 ### 3.3 Performances par Classe (Random Forest, 7 Classes)
 
@@ -161,23 +160,18 @@ Quatre algorithmes ont été évalués avec gestion du déséquilibre via **SMOT
 
 ### 3.4 Justification du Choix Random Forest
 
-**Grille d'évaluation multicritères** :
+
 
 | Critère                      | Poids | Random Forest | Gradient Boosting | Arbre Simple | Régression Logistique |
 |------------------------------|-------|---------------|-------------------|--------------|-----------------------|
-| Performance Test (F1)        | 40%   | 86.89% 🏆     | 71.84%            | 83.30%       | 75.12%                |
-| Stabilité (σ CV)             | 25%   | ±1.8% 🏆      | ±3.2%             | ±8.0%        | ±2.1%                 |
-| Robustesse Outliers          | 15%   | Excellente 🏆 | Bonne             | Faible       | Moyenne               |
-| Généralisation (Δ Train-Test)| 10%   | -13.1% 🏆     | -18.7%            | -20.1%       | -8.2%                 |
-| Interprétabilité             | 5%    | Moyenne       | Faible            | Excellente 🏆| Excellente            |
-| Coût Computationnel          | 5%    | Modéré        | Élevé             | Faible 🏆    | Faible                |
-| **Score Pondéré Final**      | -     | **91.2/100**  | 68.4/100          | 74.1/100     | 69.8/100              |
+| **Performance Test (F1)**    | 40%   | 86.89% 🏆    | 71.84%            | 83.30%       | 75.12%                |
 
-**Avantages du Random Forest** :
-- Réduction variance par agrégation (100 arbres)
-- Robustesse aux outliers (bootstrap sampling)
-- Gestion implicite des interactions non-linéaires
-- Stabilité : écart-type CV de ±1.8% seulement
+
+\
+**Avantages du Random Forest** :  
+- Réduction variance par agrégation (100 arbres)  
+- Robustesse aux outliers (bootstrap sampling)  
+- Gestion implicite des interactions non-linéaires  
 
 ---
 
@@ -201,9 +195,9 @@ Quatre algorithmes ont été évalués avec gestion du déséquilibre via **SMOT
          │   Input: 24   │  │  Input: 24   │  │  Input: 24 + 1    │
          │   Output: DPE │  │Output: kWh/m²│  │   Output: DPE     │
          └───────┬───────┘  └──────┬───────┘  └─────────┬─────────┘
-                 │                  │                    │
-                 ▼                  └──────┬─────────────┘
-         ┌───────────────┐                 ▼
+                 │                 │                    │
+                 ▼                 └────────┬───────────┘
+         ┌───────────────┐                  ▼
          │ Prédiction DPE│         ┌──────────────────┐
          │ Accuracy 79.0%│         │  Chaîne Complète │
          │  (45 ms)      │         │   DPE via Conso  │
@@ -215,7 +209,7 @@ Quatre algorithmes ont été évalués avec gestion du déséquilibre via **SMOT
 
 **Objectif** : Prédire l'étiquette DPE à partir des caractéristiques physiques uniquement.
 
-**Features utilisées (24)** :
+**Variables utilisées (24)** :
 - **Numériques** : surface_habitable, hauteur_sous_plafond, nombre_niveau, anciennete, score_isolation_moyen, conso_ecs_ep, volume_logement, inertie_lourde
 - **Catégorielles** : type_batiment, energie_regroupee, zone_climatique, classe_annee_construction, qualite_isolation_murs, type_installation_chauffage, etc.
 
@@ -252,12 +246,7 @@ Pipeline([
 | **E**      | 12 178  | 75.3%     | 71.8%  | **73.5%**|
 | **F_G**    | 5 756   | 88.7%     | 79.4%  | **83.8%**|
 
-**Distribution des erreurs** :
-- Erreurs adjacentes (±1 classe) : **88.7%**
-- Erreurs distantes (±2 classes) : 9.8%
-- Erreurs graves (≥3 classes) : **1.5%** seulement
-
-**Top 10 Features influentes** :
+**Top 10 variables influentes** :
 
 ```
 1. conso_ecs_ep                    │████████████│ 14.2%
@@ -281,6 +270,8 @@ Pipeline([
 y_train_log = np.log1p(df_train['conso_m2'])
 y_pred = np.expm1(pipeline.predict(X_test))
 ```
+
+La transformation permet de travailler sur une variable distribuée normalement
 
 **Impact de la transformation** :
 
@@ -368,87 +359,10 @@ Pipeline([
 | **Modèle 2**            | R²                | 0.874  | 0.869  | 0.876  | 0.867  | 0.871  | 0.871   | ±1.2%|
 | **Modèle 3 (Supervisé)**| F1-Score (macro)  | 98.8%  | 98.6%  | 98.9%  | 98.5%  | 98.7%  | 98.7%   | ±0.4%|
 
-**Coefficient de Variation** :
-- Modèle 1 : 2.35% ✅ (excellent)
-- Modèle 2 : 1.38% ✅ (excellent)
-- Modèle 3 : 0.41% ✅ (exceptionnel)
-
-### 5.2 Analyse des Erreurs
-
-**Patterns d'erreur (Modèle 1)** :
-
-| Type d'Erreur                     | Fréquence | Magnitude Moyenne |
-|-----------------------------------|-----------|-------------------|
-| Adjacent (±1 classe)              | 88.7%     | 23.4 kWh/m²       |
-| Distant (±2 classes)              | 9.8%      | 64.7 kWh/m²       |
-| Très Distant (≥3 classes)         | 1.5%      | 128.3 kWh/m²      |
-
-**Erreurs graves (315 cas, revue manuelle de 50)** :
-- 42% : Erreurs de saisie dataset source
-- 31% : Rénovations énergétiques non capturées
-- 18% : Logements atypiques
-- 9% : Erreurs réelles du modèle
-
-### 5.3 Comparaison avec l'État de l'Art
-
-| Étude                    | Année | Périmètre    | Dataset      | Algorithme      | Classes | Performance |
-|--------------------------|-------|--------------|--------------|-----------------|---------|-------------|
-| **Notre Étude**          | 2025  | Rhône (FR)   | 358k         | Random Forest   | 5       | **79.0%**   |
-| **Notre Étude**          | 2025  | Rhône (FR)   | 358k         | Random Forest   | 7       | **92.1%**   |
-| Djenouri et al.          | 2023  | Algérie      | 42k          | XGBoost         | 7       | 76.2%       |
-| Li & Wang                | 2023  | Shanghai     | 127k         | LightGBM        | 5       | 81.7%       |
-| Foucquier et al.         | 2022  | France       | 2M           | Neural Network  | 7       | 74.8%       |
-| Robinson et al.          | 2022  | Royaume-Uni  | 1.5M         | Gradient Boost. | 7       | 81.3%       |
-| ADEME (Baseline Métier)  | 2024  | -            | -            | Règles Expertes | 7       | ~65%        |
-
-**Analyse** :
-- Performance dans le quartile supérieur des études récentes
-- Gain de **+14 points** vs baseline métier ADEME
-- Supériorité démontrée de l'apprentissage automatique
-
----
-
-## 6. Discussion et Applications
-
-### 6.1 Impact pour les Citoyens
-
-**Estimation Pré-Achat/Location** :
-- Outil gratuit vs 150-300€ pour un DPE officiel
-- Empowerment des ménages dans leurs décisions immobilières
-
-**Priorisation des Travaux** :
-- Simulation : "Si j'isole ma toiture → gain 1 classe DPE (D→C)"
-- Estimation économique : Gain énergétique × Prix énergie × 30 ans
-
-### 6.2 Impact pour les Collectivités
-
-**Cartographie Énergétique** :
-- Identification des passoires thermiques par quartier
-- Ciblage géographique des subventions rénovation
-- Intégration PCAET (Plan Climat-Air-Énergie Territorial)
-
-**Exemple d'utilisation** :
-```python
-df_cadastre['dpe_prédit'] = model_1.predict(df_cadastre[features])
-passoires = df_cadastre[df_cadastre['dpe_prédit'] == 'F_G']
-quartiers_prioritaires = passoires.groupby('code_iris').size().nlargest(10)
-```
-
-### 6.3 Limites Identifiées
-
-**Biais Géographique** :
-- Entraînement limité au Rhône (zone H1c)
-- Test sur Hérault (zone H3) : -10.6 points accuracy
-
-**Biais Temporel** :
-- Évolution réglementations (RE2020, interdiction chaudières gaz)
-- Nécessité ré-entraînement annuel
-
-**Biais de Représentativité** :
-- Dataset = logements vendus/loués uniquement
-- Sous-représentation classes F-G (logements hors marché)
-
----
+**Coefficient de Variation** :  
+- Modèle 1 : 2.35%     
+- Modèle 2 : 1.38%    
+- Modèle 3 : 0.41%     
 
 **Stack Technique** :
 - Python 3.10+, scikit-learn 1.4+, pandas, numpy
