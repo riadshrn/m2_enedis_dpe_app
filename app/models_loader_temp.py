@@ -1,7 +1,7 @@
 import joblib
 import requests
 from pathlib import Path
-from tqdm import tqdm  # ✅ pour la barre de progression
+from tqdm import tqdm 
 
 MODELS_PATH = Path(__file__).resolve().parent.parent / "models" / "Compressed"
 MODELS_PATH.mkdir(parents=True, exist_ok=True)
