@@ -13,8 +13,7 @@
 
 ## Présentation du projet
 
-L’application **DPE Rhône 69** est un projet universitaire réalisé dans le cadre du **Master 2 Informatique Décisionnelle (Université Lyon 2)**.  
-Elle a pour objectif d’analyser et de prédire la **performance énergétique (étiquette DPE)** et la **consommation annuelle d’énergie** des logements du département du Rhône (69) à partir des données ouvertes **ADEME** et **Enedis**.
+L’application **DPE Rhône 69** combine données publiques et intelligence artificielle pour démocratiser l'accès à l'information énergétique dans le département du Rhône à partir des données ouvertes **ADEME** et **Enedis**.
 
 ###  Déploiement en ligne
 | Service | Lien direct |
@@ -41,24 +40,72 @@ Elle a pour objectif d’analyser et de prédire la **performance énergétique 
 m2_enedis_dpe_app/
 │
 ├── app/                      → API FastAPI (backend)
-│   ├── main.py               → Point d’entrée de l’API
-│   ├── routes/               → Routes : prédiction, interprétation, visualisation
-│   └── models/Compressed/    → Modèles compressés (.joblib)
-│
-├── streamlit_app/            → Interface Streamlit (frontend)
-│   ├── app.py                → Page d’accueil
-│   ├── pages/                → Pages analytiques et visuelles
-│   ├── assets/               → CSS, icônes, images
-│   └── utils/                → Fonctions utilitaires
-│
+├── streamlit_app/            → Interface Streamlit (frontend)│
 ├── data/                     → Données locales (ADEME, Enedis)
 ├── models/                   → Dossiers de modèles complets
 ├── notebooks/                → Analyses exploratoires & modélisation
 ├── docker-compose.yml        → Orchestration multi-conteneurs
-├── Dockerfile (API)          → Image du backend FastAPI
-├── Dockerfile (Streamlit)    → Image du frontend Streamlit
-├── requirements.txt          → Dépendances spécifiques à chaque service
-└── academic_report/          → Rapport d’étude Markdown
+└── academic_report/          → Rapport d’étude 
+```
+
+---
+
+## Schéma général de l’écosystème applicatif
+
+```mermaid
+flowchart TD
+
+    subgraph DATA["Données externes"]
+        A1["ADEME API"] --> A
+        A2["ENEDIS API"] --> A
+        A["Données sources (ADEME / Enedis)"]
+    end
+
+    subgraph NOTEBOOK["Traitement & Modélisation"]
+        B1["Nettoyage & Fusion des données"]
+        B2["EDA (Analyse exploratoire)"]
+        B3["Modélisation Machine Learning"]
+        B4["3 modèles : 
+              • Prédiction conso
+              • DPE sans conso
+              • DPE avec conso"]
+        B1 --> B2 --> B3 --> B4
+    end
+
+    subgraph HF_MODELS["Déploiement modèles & données"]
+        M1["Modèles ML hébergés sur Hugging Face"]
+        M2["Jeu de données fusionné hébergé sur Hugging Face"]
+    end
+
+    subgraph API["API FastAPI (Backend)"]
+        F1["Endpoints /predict, /interpretation, /data_viz"]
+        F2["Appels aux modèles (Hugging Face)"]
+        F3["Intégration Mistral AI (LLM interprétation)"]
+        F1 --> F2 --> F3
+    end
+
+    subgraph APP["Interface Streamlit (Frontend)"]
+        S1["Visualisation (Plotly / Mapbox)"]
+        S2["Prédiction interactive via API"]
+        S3["Export CSV / PNG"]
+        S4["Affichage interprétation Mistral"]
+        S1 --> S2 --> S3 --> S4
+    end
+
+    subgraph USER["Utilisateur"]
+        U1["Exploration & Prédiction"]
+    end
+
+    %% Relations entre blocs
+    A --> NOTEBOOK
+    NOTEBOOK --> HF_MODELS
+    HF_MODELS --> API
+    USER --> APP
+    API --> APP
+    APP --> API
+    APP --> USER
+    
+
 ```
 
 ---
