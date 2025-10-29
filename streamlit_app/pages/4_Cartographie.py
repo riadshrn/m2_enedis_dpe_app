@@ -121,6 +121,7 @@ with c6:
 
 
 cols = [
+    "row_id",
     "nom_commune_ban", "type_batiment", "surface_habitable_logement",
     "etiquette_dpe", "lon", "lat", "conso_m2", "cout_m2", "color_dpe"
 ]
@@ -138,7 +139,7 @@ filtered = filtered[
     & filtered["cout_m2"].between(*cout_range)
 ]
 
-filtered["row_id"] = range(len(filtered))
+#filtered["row_id"] = range(len(filtered))
 
 st.success(f"{len(filtered):,} logements affichés (sur {len(df):,})")
 
@@ -155,6 +156,16 @@ color_map = dict(df_geo.groupby("etiquette_dpe")["color_dpe"].first()) or {
 center, zoom = compute_center_zoom(df_geo if not df_geo.empty else filtered)
 sample_n = min(5000, len(df_geo))
 plot_df = df_geo.sample(sample_n, random_state=42) if len(df_geo) > sample_n else df_geo
+
+map_style = st.selectbox(
+    "🎨 Style de carte",
+    [
+        "carto-positron",
+        "carto-darkmatter",
+        "open-street-map"
+    ],
+    index=2  
+)
 
 fig = px.scatter_mapbox(
     plot_df,
@@ -173,7 +184,7 @@ fig = px.scatter_mapbox(
     zoom=zoom
 )
 fig.update_layout(
-    mapbox_style="carto-positron",
+    mapbox_style=map_style, 
     mapbox_center=center,
     margin=dict(l=0, r=0, t=40, b=0),
     hoverlabel=dict(bgcolor="white", font_size=12),
@@ -188,11 +199,11 @@ with st.expander("👁️ Voir les données utilisées pour la carte"):
     st.caption("💡 Cliquez une ligne pour ouvrir la fiche. Une seule sélection à la fois est autorisée.")
     st.dataframe(
         filtered,
-        use_container_width=True,
+        width="stretch",
         height=420,
         on_select="rerun",
         key="filtered_df",
-        selection_mode="single-row",   
+        selection_mode="single-row",
     )
 
 # ---------- FICHE TECHNIQUE LOGEMENT ----------
