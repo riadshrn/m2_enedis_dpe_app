@@ -8,8 +8,8 @@ from typing import Optional, Union
 
 # === CONFIG ===
 st.set_page_config(page_title="Visualisation dynamique DPE", page_icon="📊", layout="wide")
-API_BASE = "http://localhost:8000"
-# API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
+# API_BASE = "http://localhost:8000"
+API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
 
 # === CSS ===
 def load_css():
@@ -145,7 +145,7 @@ def charger_donnees(cols: list):
     try:
         r = requests.get(
             f"{API_BASE}/data/select",
-            params={"columns": cols, "size": 20000},
+            params={"columns": cols, "size": 200000},
             timeout=30
         )
         r.raise_for_status()

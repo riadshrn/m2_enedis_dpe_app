@@ -48,8 +48,8 @@ with st.sidebar:
 
 
 # === API Base URL ===
-#API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
-API_BASE = "http://localhost:8000"
+API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
+#API_BASE = "http://localhost:8000"
 #API_BASE = "http://dpe-api:8000"
 
 # === Charger les listes dynamiques depuis FastAPI ===

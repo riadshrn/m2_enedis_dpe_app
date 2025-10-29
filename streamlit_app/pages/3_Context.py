@@ -52,22 +52,35 @@ st.markdown("""
 # ==================== PAGE ====================
 
 def show():
+    # ==================== CHARGEMENT DES DONNÉES ====================
+    # API_URL = os.getenv("API_URL", "https://riadshrn-api-dpe-conso.hf.space/data/visualisation?page=1&size=50000")
+
+    # try:
+    #     with st.spinner("Chargement des données depuis l’API..."):
+    #         response = requests.get(API_URL, timeout=60)
+    #         if response.status_code == 200:
+    #             data = response.json()
+    #             df = pd.DataFrame(data["data"])
+    #         else:
+    #             st.warning(f" API non disponible ({response.status_code}), chargement local.")
+    #             df = pd.read_csv("../data/df_adem_enedis_iris_69_sample.csv.gz", compression="gzip")
+    # except Exception:
+    #     st.warning(" API non disponible — chargement du fichier local d’échantillon.")
+    #     df = pd.read_csv("../data/df_adem_enedis_iris_69_sample.csv.gz", compression="gzip")
+
+    # if df.empty:
+    #     st.error(" Aucune donnée trouvée.")
+    #     return
 
     # ==================== CHARGEMENT DES DONNÉES ====================
-    API_URL = os.getenv("API_URL", "https://riadshrn-api-dpe-conso.hf.space/data/visualisation?page=1&size=5000")
+    csv_path = Path(__file__).parent.parent / "data" / "df_adem_enedis_iris_69_prepared.csv.gz"
 
     try:
-        with st.spinner("Chargement des données depuis l’API..."):
-            response = requests.get(API_URL, timeout=60)
-            if response.status_code == 200:
-                data = response.json()
-                df = pd.DataFrame(data["data"])
-            else:
-                st.warning(f"⚠️ API non disponible ({response.status_code}), chargement local.")
-                df = pd.read_csv("../data/df_adem_enedis_iris_69_sample.csv.gz", compression="gzip")
-    except Exception:
-        st.warning("⚠️ API non disponible — chargement du fichier local d’échantillon.")
-        df = pd.read_csv("../data/df_adem_enedis_iris_69_sample.csv.gz", compression="gzip")
+        with st.spinner("Chargement du fichier local (df_adem_enedis_iris_69_prepared.csv.gz)..."):
+            df = pd.read_csv(csv_path, compression="gzip")
+            st.success(f"✅ Données chargées depuis le fichier local — {len(df):,} lignes.")
+    except Exception as e:
+        st.error(f"❌ Erreur lors du chargement du CSV local : {e}")
 
     if df.empty:
         st.error("❌ Aucune donnée trouvée.")

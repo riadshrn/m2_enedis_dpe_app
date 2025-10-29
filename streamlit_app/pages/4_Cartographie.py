@@ -7,8 +7,8 @@ from io import BytesIO
 
 # === CONFIG ===
 st.set_page_config(page_title="Cartographie DPE Rhône 69", page_icon="🗺️", layout="wide")
-API_BASE = "http://localhost:8000"
-# API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
+#API_BASE = "http://localhost:8000"
+API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
 
 # === CSS ===
 def load_css():
@@ -44,31 +44,61 @@ def compute_center_zoom(df: pd.DataFrame):
     elif span < 0.50: zoom = 9
     elif span < 1.00: zoom = 8
     else: zoom = 7
+    zoom= zoom * 1.1
     return center, zoom
 
 # ---------- DATA ----------
+# @st.cache_data(ttl=1800)
+# def load_data():
+#     cols = [
+#         "nom_commune_ban", "type_batiment", "surface_habitable_logement",
+#         "etiquette_dpe", "lon", "lat", "conso_m2", "cout_m2", "color_dpe"
+#     ]
+#     r = requests.get(f"{API_BASE}/data/select", params={"columns": cols, "size": 300000}, timeout=30)
+#     r.raise_for_status()
+#     df = pd.DataFrame(r.json().get("data", []))
+#     if "row_id" not in df.columns:
+#         df = df.reset_index(names="row_id")
+#     return df
+#
+# try:
+#     df = load_data()
+# except Exception as e:
+#     st.error(f"Erreur API: {e}")
+#     st.stop()
+#
+# if df.empty:
+#     st.warning("Aucune donnée chargée.")
+#     st.stop()
+
+# ---------- DATA (chargement local) ----------
+import time
+from pathlib import Path
+
 @st.cache_data(ttl=1800)
-def load_data():
-    cols = [
-        "nom_commune_ban", "type_batiment", "surface_habitable_logement",
-        "etiquette_dpe", "lon", "lat", "conso_m2", "cout_m2", "color_dpe"
-    ]
-    r = requests.get(f"{API_BASE}/data/select", params={"columns": cols, "size": 50000}, timeout=30)
-    r.raise_for_status()
-    df = pd.DataFrame(r.json().get("data", []))
+def load_data_local():
+    csv_path = Path(__file__).parent.parent / "data" / "df_adem_enedis_iris_69_prepared.csv.gz"
+
+    start = time.time()
+    df = pd.read_csv(csv_path, compression="gzip")
+    elapsed = time.time() - start
+
+    st.success(f"✅ Données locales chargées en {elapsed:.2f} s — {len(df):,} lignes.")
     if "row_id" not in df.columns:
         df = df.reset_index(names="row_id")
+
     return df
 
 try:
-    df = load_data()
+    df = load_data_local()
 except Exception as e:
-    st.error(f"Erreur API: {e}")
+    st.error(f"❌ Erreur lors du chargement local : {e}")
     st.stop()
 
 if df.empty:
-    st.warning("Aucune donnée chargée.")
+    st.warning("⚠️ Aucune donnée trouvée dans le fichier local.")
     st.stop()
+
 
 # ---------- FILTRES ----------
 st.markdown("## 🎛️ Filtres")
@@ -89,7 +119,13 @@ with c5:
 with c6:
     cout_range = st.slider("Coût (€/m²/an)", 0, int(df["cout_m2"].max()), (0, int(df["cout_m2"].max()/2)))
 
-filtered = df.copy()
+
+cols = [
+    "nom_commune_ban", "type_batiment", "surface_habitable_logement",
+    "etiquette_dpe", "lon", "lat", "conso_m2", "cout_m2", "color_dpe"
+]
+
+filtered = df[cols].copy()
 if commune_sel:
     filtered = filtered[filtered["nom_commune_ban"].isin(commune_sel)]
 if type_bat_sel:
@@ -101,6 +137,8 @@ filtered = filtered[
     & filtered["conso_m2"].between(*conso_range)
     & filtered["cout_m2"].between(*cout_range)
 ]
+
+filtered["row_id"] = range(len(filtered))
 
 st.success(f"{len(filtered):,} logements affichés (sur {len(df):,})")
 
@@ -125,10 +163,11 @@ fig = px.scatter_mapbox(
     size="surface_habitable_logement",
     color_discrete_map=color_map,
     hover_name="nom_commune_ban",
-    hover_data={
-        "row_id": True, "type_batiment": True,
-        "surface_habitable_logement": True, "conso_m2": True, "cout_m2": True
-    },
+#    hover_data={
+#        "row_id": True, "type_batiment": True,
+#        "surface_habitable_logement": True, "conso_m2": True, "cout_m2": True
+#    },
+    hover_data=["nom_commune_ban", "type_batiment", "surface_habitable_logement", "etiquette_dpe", "conso_m2", "cout_m2"],
     height=700,
     title="Répartition géographique des logements par classe DPE (Rhône 69)",
     zoom=zoom
@@ -153,7 +192,7 @@ with st.expander("👁️ Voir les données utilisées pour la carte"):
         height=420,
         on_select="rerun",
         key="filtered_df",
-        selection_mode="single-row",   # <- force 1 seule ligne
+        selection_mode="single-row",   
     )
 
 # ---------- FICHE TECHNIQUE LOGEMENT ----------
