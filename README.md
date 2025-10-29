@@ -16,10 +16,9 @@
 L’application **DPE Rhône 69** combine données publiques et intelligence artificielle pour démocratiser l'accès à l'information énergétique dans le département du Rhône à partir des données ouvertes **ADEME** et **Enedis**.
 
 ###  Déploiement en ligne
-| Service | Lien direct |
-|----------|-------------|
-|  **API FastAPI** | [https://riadshrn-api-dpe-conso.hf.space/docs](https://riadshrn-api-dpe-conso.hf.space/docs) |
-|  **Application Streamlit** | [https://riadshrn-streamlit-dpe-app.hf.space/](https://riadshrn-streamlit-dpe-app.hf.space/) |
+**Application Streamlit** : [https://riadshrn-streamlit-dpe-app.hf.space/](https://riadshrn-streamlit-dpe-app.hf.space/) 
+**API FastAPI** : [https://riadshrn-api-dpe-conso.hf.space/docs](https://riadshrn-api-dpe-conso.hf.space/docs) 
+
 
 ---
 
@@ -41,11 +40,11 @@ m2_enedis_dpe_app/
 │
 ├── app/                      → API FastAPI (backend)
 ├── streamlit_app/            → Interface Streamlit (frontend)│
-├── data/                     → Données locales (ADEME, Enedis)
+├── data/                     → Données (ADEME, Enedis, IRIS ...)
 ├── models/                   → Dossiers de modèles complets
 ├── notebooks/                → Analyses exploratoires & modélisation
 ├── docker-compose.yml        → Orchestration multi-conteneurs
-└── academic_report/          → Rapport d’étude 
+└── academic_reports/          → Rapport d’étude 
 ```
 
 ---
