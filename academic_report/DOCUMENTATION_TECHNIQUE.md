@@ -35,7 +35,7 @@ Ce schéma illustre l’organisation générale des composants du projet :
 </p>
 
 Ce schéma représente la pipeline complète :
-1. **Collecte** des données depuis les **APIs ADEME** et **Enedis**.  
+1. **Collecte** des données depuis les **APIs ADEME** et **Enedis** et **Data Gouv**.  
 2. **Nettoyage et fusion** dans des notebooks Jupyter (traitement des doublons, homogénéisation des communes, conversion des unités, etc.).  
 3. **Analyse exploratoire (EDA)** et visualisation des distributions via Plotly.  
 4. **Modélisation Machine Learning** avec scikit-learn :  
@@ -82,18 +82,6 @@ Premier lancement : environ **1 à 2 minutes** pour la construction des images.
 | FastAPI | http://localhost:8000 | API de prédiction |
 | Swagger UI | http://localhost:8000/docs | Documentation API |
 
----
-
-### Arrêt et maintenance
-
-```bash
-docker compose down
-```
-
-Pour relancer uniquement l’API :
-```bash
-docker compose up api
-```
 
 ---
 
