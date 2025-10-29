@@ -157,21 +157,11 @@ center, zoom = compute_center_zoom(df_geo if not df_geo.empty else filtered)
 sample_n = min(5000, len(df_geo))
 plot_df = df_geo.sample(sample_n, random_state=42) if len(df_geo) > sample_n else df_geo
 
-map_style = st.selectbox(
-    "🎨 Style de carte",
-    [
-        "carto-positron",
-        "carto-darkmatter",
-        "open-street-map"
-    ],
-    index=2  
-)
-
 fig = px.scatter_mapbox(
     plot_df,
     lat="lat", lon="lon",
     color="etiquette_dpe",
-    size="surface_habitable_logement",
+    #size="surface_habitable_logement",
     color_discrete_map=color_map,
     hover_name="nom_commune_ban",
 #    hover_data={
@@ -184,7 +174,7 @@ fig = px.scatter_mapbox(
     zoom=zoom
 )
 fig.update_layout(
-    mapbox_style=map_style, 
+    mapbox_style="open-street-map", 
     mapbox_center=center,
     margin=dict(l=0, r=0, t=40, b=0),
     hoverlabel=dict(bgcolor="white", font_size=12),
