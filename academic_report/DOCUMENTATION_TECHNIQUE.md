@@ -89,7 +89,7 @@ Premier lancement : environ **1 à 2 minutes** pour la construction des images.
 
 ### Backend – API (FastAPI)
 
-| Package | Version actuelle (2025) | Description |
+| Package | Version  | Description |
 |----------|--------------------------|-------------|
 | fastapi | 0.115.4 | Framework web Python asynchrone |
 | uvicorn | 0.32.0 | Serveur ASGI pour FastAPI |
@@ -105,7 +105,7 @@ Premier lancement : environ **1 à 2 minutes** pour la construction des images.
 
 ### Frontend – Interface Streamlit
 
-| Package | Version actuelle (2025) | Description |
+| Package | Version  | Description |
 |----------|--------------------------|-------------|
 | streamlit | 1.38.0 | Interface web interactive |
 | pandas | 2.2.3 | Manipulation de DataFrame |
