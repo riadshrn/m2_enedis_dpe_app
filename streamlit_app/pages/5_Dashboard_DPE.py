@@ -17,12 +17,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# (Optionnel) Corriger les permissions Streamlit en environnements restreints (HF, Docker)
-os.environ.setdefault("HOME", "/tmp")
-os.makedirs("/tmp/.streamlit", exist_ok=True)
-with open("/tmp/.streamlit/config.toml", "w") as f:
-    f.write("[browser]\ngatherUsageStats = false\n")
-
 def load_css():
     css_file = Path(__file__).parent.parent / "assets" / "styles.css"
     if css_file.exists():
