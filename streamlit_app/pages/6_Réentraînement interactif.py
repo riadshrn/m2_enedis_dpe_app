@@ -291,7 +291,7 @@ if df is not None:
                 time.sleep(0.1) 
                 my_bar.progress(percent_complete, text=progress_text)
 
-            joblib.dump(rf_dpe_conso, buf, compress=("xz", 6))
+            joblib.dump(rf_dpe_conso, buf)
             buf.seek(0)
             my_bar.empty()  # Supprime la barre une fois terminé
 
