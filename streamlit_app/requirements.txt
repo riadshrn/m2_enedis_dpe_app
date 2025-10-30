@@ -1,13 +1,14 @@
-streamlit
-pandas
-plotly
-requests
-kaleido
-streamlit_plotly_events
-joblib
-scikit-learn
-io
-time
-random
-pathlib
-base64
+# === Interface & visualisation ===
+streamlit>=1.38
+plotly>=6.0
+streamlit-plotly-events>=0.0.6
+kaleido>=0.2.1
+
+# === Données & traitements ===
+pandas>=2.2
+numpy>=1.26
+requests>=2.31
+joblib>=1.4
+
+# === Machine Learning ===
+scikit-learn>=1.7
