@@ -24,7 +24,7 @@ st.set_page_config(
 
 st.markdown("""
 <div class="main-header fade-in">
-  <h1>📊 Dashboard efficacité énergétique – Rhône (69)</h1>
+  <h1>Dashboard efficacité énergétique – Rhône (69)</h1>
   <p>KPIs, graphiques et carte choroplèthe filtrables (données locales CSV)</p>
 </div>
 """, unsafe_allow_html=True)
@@ -483,7 +483,7 @@ for name in selected:
         with cols_layout[slot % 2]:
             #st.plotly_chart(fig, width="stretch", config={"displaylogo": False})
             fig.update_layout(
-                paper_bgcolor="rgba(0,102,204,0.07)",
+                paper_bgcolor="rgba(0,0,0,0.03)",
                 plot_bgcolor="rgba(255,255,255,0)",
                 margin=dict(l=10, r=10, t=50, b=10)
             )
@@ -526,7 +526,7 @@ with st.expander("Voir / exporter les données filtrées"):
     c1, c2 = st.columns(2)
     with c1:
         st.download_button(
-            "📁 Télécharger les données filtrées (CSV)",
+            "Télécharger les données filtrées (CSV)",
             data=filtered.to_csv(index=False).encode("utf-8"),
             file_name="dpe_filtre.csv",
             mime="text/csv",
@@ -538,14 +538,14 @@ with st.expander("Voir / exporter les données filtrées"):
             st.info("Sélectionnez d’abord des visualisations pour activer l’export HTML.")
         else:
             export_choice = st.selectbox(
-                "📊 Choisir la visualisation à exporter (applique les filtres actifs)",
+                "Choisir la visualisation à exporter (applique les filtres actifs)",
                 options=selected,
                 index=0,
                 help="Sélectionnez la visualisation à enregistrer en HTML interactif. "
                      "Les filtres appliqués dans le dashboard seront conservés."
             )
 
-            if st.button("💾 Exporter cette visualisation en HTML interactif"):
+            if st.button("Exporter cette visualisation en HTML interactif"):
                 with st.spinner("Génération du fichier HTML interactif..."):
                     fig_to_export = VISU_CHOICES[export_choice](filtered)
                     if fig_to_export is not None:
