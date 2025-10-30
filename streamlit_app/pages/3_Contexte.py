@@ -159,7 +159,7 @@ def show():
 
     # ==================== AFFICHAGE DU TABLEAU ====================
     st.subheader("Tableau des logements filtrés")
-    st.dataframe(filtered_df, use_container_width=True, height=700)
+    st.dataframe(filtered_df.head(100), use_container_width=True, height=700)
 
 
 # Permet d’exécuter directement la page localement

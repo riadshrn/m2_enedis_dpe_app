@@ -28,47 +28,64 @@ st.markdown("""
 st.markdown("---")
 
 # ==================== CARTES D’APERÇU ====================
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
+# --- Exploration & Visualisation ---
 with col1:
     st.markdown("""
     <div class="metric-card fade-in" style="text-align:center;">
         <div style='font-size:2.5rem;'>📊</div>
         <div style='font-weight:bold;font-size:1.2rem;'>Exploration & Visualisation</div>
         <p style='margin-top:0.5rem;color:#666;'>
-            Explorez les données énergétiques du Rhône, identifiez les tendances et 
-            <strong>assemblez des dashboards interactifs</strong> pour une analyse complète.
+            Explorez les <strong>données énergétiques du Rhône</strong>, identifiez les tendances et 
+            construisez des <strong>dashboards interactifs</strong> pour une analyse complète.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
+# ---  Cartographie & Données ADEME ---
 with col2:
+    st.markdown("""
+    <div class="metric-card fade-in" style="text-align:center;">
+        <div style='font-size:2.5rem;'>🗺️</div>
+        <div style='font-weight:bold;font-size:1.2rem;'>Cartographie & Données ADEME</div>
+        <p style='margin-top:0.5rem;color:#666;'>
+            Visualisez les <strong>logements du Rhône</strong> via la cartographie dynamique.  
+            Comparez les <strong>communes</strong> en temps réel via l’<strong>API ADEME</strong>.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ---  Prédiction & Interprétation ---
+with col3:
     st.markdown("""
     <div class="metric-card fade-in" style="text-align:center;">
         <div style='font-size:2.5rem;'>🔮</div>
         <div style='font-weight:bold;font-size:1.2rem;'>Prédiction & Interprétation</div>
         <p style='margin-top:0.5rem;color:#666;'>
-            Estimez automatiquement <strong>l’étiquette DPE</strong> et la 
-            <strong>consommation énergétique</strong> grâce à l’IA
-            & obtenez une <strong>interprétation</strong> via un modèle LLM.
+            Prédisez automatiquement <strong>l’étiquette DPE</strong> et la 
+            <strong>consommation énergétique</strong> d’un logement.  
+            Profitez d’une <strong>interprétation intelligente</strong>.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-with col3:
+# ---  AutoML & Réentraînement ---
+with col4:
     st.markdown("""
     <div class="metric-card fade-in" style="text-align:center;">
         <div style='font-size:2.5rem;'>🧠</div>
         <div style='font-weight:bold;font-size:1.2rem;'>AutoML & Réentraînement</div>
         <p style='margin-top:0.5rem;color:#666;'>
-            <strong>Réentraînez un modèle existant</strong> avec des nouvelles données 
-            & utilisez l’outil <strong>AutoML</strong> pour 
-            <strong>comparer plusieurs algorithmes</strong> pour une modélisation.
+            <strong>Réentraînez notre modèle</strong> avec de nouvelles données, comparez les 
+            <strong>algorithmes</strong> les plus performants et générez un 
+            <strong>rapport complet AutoML</strong>.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("---")
+
 # ==================== SECTION À PROPOS ====================
 st.markdown("### À propos du projet")
 
