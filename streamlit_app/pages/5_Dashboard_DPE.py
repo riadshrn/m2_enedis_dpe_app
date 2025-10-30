@@ -33,7 +33,7 @@ st.markdown("""
 # ==================== CHARGEMENT DES DONNÉES ====================
 csv_path = Path(__file__).parent.parent / "data" / "df_adem_enedis_iris_69_prepared.csv.gz"
 
-with st.spinner("Chargement de 358302 logements via l'API ..."):
+with st.spinner("Chargement de 358302 logements ..."):
     df = pd.read_csv(csv_path, compression="gzip")
     if "row_id" not in df.columns:
         df = df.reset_index(names="row_id")
