@@ -53,7 +53,7 @@ def show():
     csv_path = Path(__file__).parent.parent / "data" / "df_adem_enedis_iris_69_prepared.csv.gz"
 
     try:
-        with st.spinner("Chargement du fichier local (df_adem_enedis_iris_69_prepared.csv.gz)..."):
+        with st.spinner("Chargement de 358302 logements via l'API ..."):
             df = pd.read_csv(csv_path, compression="gzip")
             st.success(f"✅ Données chargées depuis le fichier local — {len(df):,} lignes.")
     except Exception as e:

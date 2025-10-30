@@ -122,7 +122,18 @@ if df is not None:
     y = df["etiquette_dpe"]
 
     if st.button("🚀 Lancer le réentraînement sur ces données"):
-        with st.spinner("Entraînement du modèle en cours..."):
+        with st.spinner("⏳ Préparation et initialisation du modèle..."):
+            import time
+            progress = st.progress(0)
+            for i in range(0, 30):
+                time.sleep(0.05)  # simulate un petit délai (réalisme)
+                progress.progress(i + 1)
+            progress.empty()
+
+        with st.spinner("🧠 Entraînement du modèle en cours..."):
+            import time
+            progress = st.progress(0)
+
             # === Split des données ===
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=0.2, stratify=y, random_state=42
@@ -157,10 +168,18 @@ if df is not None:
                 ))
             ])
 
-            # === Entraînement ===
+            # Simulation de progression visuelle de l'entraînement
+            for i in range(0, 100):
+                time.sleep(0.03)  # ralentir un peu pour donner l’impression de calcul
+                progress.progress(i + 1 if i < 99 else 100)
+
+            # === Entraînement réel ===
             rf_dpe_conso.fit(X_train, y_train)
 
+            progress.empty()
+
         st.success("✅ Réentraînement terminé avec succès !")
+
 
         # --------------------------------------------------------
         # 📊 Évaluation sur le jeu de test
