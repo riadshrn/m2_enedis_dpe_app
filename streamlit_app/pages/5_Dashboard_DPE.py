@@ -37,11 +37,10 @@ with st.spinner("Chargement de 358302 logements via l'API ..."):
     df = pd.read_csv(csv_path, compression="gzip")
     if "row_id" not in df.columns:
         df = df.reset_index(names="row_id")
-    st.success(f"✅ Données chargées depuis le fichier local — {len(df):,} lignes.")
 
 
 # ========= FILTRES GLOBAUX =========
-st.markdown("## 🎛️ Filtres")
+st.markdown("### Filtres")
 
 with st.container():
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -93,15 +92,15 @@ filtered = filtered[
     & filtered["cout_m2"].between(*cout_range)
 ]
 
-st.info(f"🎯 **Sélection** : {len(filtered):,} logements (sur {len(df):,})")
+#st.info(f"**Sélection** : {len(filtered):,} logements (sur {len(df):,})")
 
 
 # ========= KPI =========
-st.markdown("## 🔢 KPI")
+st.markdown("### KPI")
 k1, k2, k3, k4 = st.columns(4)
 
 with k1:
-    st.metric("🏠 Logements", f"{len(filtered):,}")
+    st.metric("🏠 Logements", f"{len(filtered):,}/{len(df):,}")
 
 with k2:
     moy_conso = filtered["conso_m2"].mean()
@@ -203,11 +202,31 @@ def fig_isolation_vs_conso(df_):
 def fig_conso_par_annee(df_):
     if df_.empty:
         return None
+
+    ordre = ["avant_1948", "1949_1974", "1975_1989", "1990_1999", "2000_2011", "apres_2012"]
     tmp = df_.groupby("classe_annee_construction", as_index=False)["conso_m2"].mean()
+    tmp["classe_annee_construction"] = pd.Categorical(tmp["classe_annee_construction"], categories=ordre, ordered=True)
     tmp = tmp.sort_values("classe_annee_construction")
-    return px.bar(tmp, x="classe_annee_construction", y="conso_m2",
-                  title="Conso moyenne par classe d’année de construction",
-                  labels={"conso_m2":"kWh/m²/an", "classe_annee_construction":"Classe année"})
+
+    # Graphique Plotly
+    fig = px.bar(
+        tmp,
+        x="classe_annee_construction",
+        y="conso_m2",
+        title="Conso moyenne par classe d’année de construction",
+        labels={"conso_m2": "kWh/m²/an", "classe_annee_construction": "Classe année"},
+        category_orders={"classe_annee_construction": ordre},  # 👈 renforce l'ordre dans Plotly
+        color="classe_annee_construction",
+        color_discrete_sequence=px.colors.sequential.Viridis
+    )
+
+    fig.update_layout(
+        xaxis_title="Classe d'année de construction",
+        yaxis_title="Consommation moyenne (kWh/m²/an)",
+        margin=dict(l=0, r=0, t=40, b=0)
+    )
+
+    return fig
 
 def fig_carte_choropleth(df_):
     """
@@ -285,7 +304,7 @@ def fig_carte_choropleth(df_):
         hover_data={"conso_m2_mean":":.1f","n":True,"lat":False,"lon":False},
         title="Carte (fallback) – Centroïdes par commune, taille = nb logements, couleur = conso moyenne",
         height=650,
-        zoom=8
+        zoom=10
     )
     fig.update_layout(
         mapbox_style="open-street-map",
@@ -419,7 +438,7 @@ def fig_carte_points(df_):
 
 
 # ========= SÉLECTION DE VISU =========
-st.markdown("## 📈 Visualisations")
+st.markdown("### Visualisations")
 
 VISU_CHOICES = {
     "Répartition par étiquette DPE": fig_repartition_dpe,
@@ -439,9 +458,9 @@ VISU_CHOICES = {
 
 default_selection = [
     "Répartition par étiquette DPE",
-    "Conso moyenne par type de bâtiment",
-    "Distribution de la conso (histogramme)",
-    "Carte choroplèthe par commune",
+    "Coût par étiquette (boxplot)",
+    "Top 25 coût moyen par commune",
+    "Conso vs isolation murs (boxplot)",
 ]
 
 selected = st.multiselect(
@@ -463,6 +482,11 @@ for name in selected:
     else:
         with cols_layout[slot % 2]:
             #st.plotly_chart(fig, width="stretch", config={"displaylogo": False})
+            fig.update_layout(
+                paper_bgcolor="rgba(0,102,204,0.07)",
+                plot_bgcolor="rgba(255,255,255,0)",
+                margin=dict(l=10, r=10, t=50, b=10)
+            )
             st.plotly_chart(
                 fig,
                 config={
@@ -473,52 +497,66 @@ for name in selected:
                     "modeBarButtonsToRemove": ["select2d", "lasso2d"]
                 }
             )
+            
 
 
     slot += 1
 
 
 # ========= TABLEAU & EXPORT =========
-st.markdown("## 👁️ Données filtrées")
+st.markdown("### Données filtrées")
 with st.expander("Voir / exporter les données filtrées"):
     st.caption("Aperçu des données utilisées par le dashboard.")
     st.dataframe(
         filtered[
             [
-                "row_id","nom_commune_ban","type_batiment","surface_habitable_logement",
-                "etiquette_dpe","conso_m2","cout_m2","emission_ges_5_usages",
-                "type_energie_principale_chauffage","classe_annee_construction","zone_climatique",
-                "lat","lon","color_dpe"
+                "row_id", "nom_commune_ban", "type_batiment", "surface_habitable_logement",
+                "etiquette_dpe", "conso_m2", "cout_m2", "emission_ges_5_usages",
+                "type_energie_principale_chauffage", "classe_annee_construction",
+                "zone_climatique", "lat", "lon", "color_dpe"
             ]
         ].reset_index(drop=True),
         width="stretch",
         height=420
     )
 
+    st.markdown("---")
+    st.markdown("#### Export des données et visualisations")
+
     c1, c2 = st.columns(2)
     with c1:
         st.download_button(
-            "📁 Télécharger CSV (filtré)",
+            "📁 Télécharger les données filtrées (CSV)",
             data=filtered.to_csv(index=False).encode("utf-8"),
             file_name="dpe_filtre.csv",
             mime="text/csv",
-            width="stretch"
+            use_container_width=True
         )
+
     with c2:
-        # Export HTML interactif du dernier graphique affiché si dispo
-        # (Ici, on reprend la dernière fig de la boucle si au moins une visu a été rendue)
-        if selected:
-            last_fig = VISU_CHOICES[selected[-1]](filtered)
-            if last_fig is not None:
-                html_bytes = last_fig.to_html(include_plotlyjs="cdn").encode("utf-8")
-                st.download_button(
-                    "💾 Télécharger la dernière visualisation (HTML interactif)",
-                    data=html_bytes,
-                    file_name="visualisation.html",
-                    mime="text/html",
-                    width="stretch"
-                )
-            else:
-                st.info("Aucune visualisation exportable pour le moment.")
+        if not selected:
+            st.info("Sélectionnez d’abord des visualisations pour activer l’export HTML.")
         else:
-            st.info("Sélectionnez au moins une visualisation pour l’export HTML.")
+            export_choice = st.selectbox(
+                "📊 Choisir la visualisation à exporter (applique les filtres actifs)",
+                options=selected,
+                index=0,
+                help="Sélectionnez la visualisation à enregistrer en HTML interactif. "
+                     "Les filtres appliqués dans le dashboard seront conservés."
+            )
+
+            if st.button("💾 Exporter cette visualisation en HTML interactif"):
+                with st.spinner("Génération du fichier HTML interactif..."):
+                    fig_to_export = VISU_CHOICES[export_choice](filtered)
+                    if fig_to_export is not None:
+                        html_bytes = fig_to_export.to_html(include_plotlyjs="cdn").encode("utf-8")
+                        st.download_button(
+                            "⬇️ Télécharger le fichier HTML",
+                            data=html_bytes,
+                            file_name=f"visualisation_{export_choice.replace(' ', '_')}.html",
+                            mime="text/html",
+                            use_container_width=True
+                        )
+                    else:
+                        st.warning("❌ Impossible d’exporter : cette visualisation ne contient pas de données.")
+
