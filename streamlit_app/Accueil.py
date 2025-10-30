@@ -91,18 +91,23 @@ with st.expander("Exploration et tableaux de bord interactifs"):
 
 with st.expander("Cartographie énergétique intelligente"):
     st.markdown("""
-    - Carte interactive des logements et de leurs classes DPE, colorée selon l’étiquette énergétique (A → G).  
-    - **Comparaison géographique** entre communes, zones climatiques et types d’énergie utilisés.  
-    - Centrage automatique sur le département du Rhône avec ajustement dynamique du zoom.  
+    - Carte interactive des logements et de leurs classes DPE, colorée selon l’étiquette énergétique (A → G).
+    - **Filtres avancés** : commune, code postal, type de bâtiment, étiquette DPE, consommation et coût énergétique.
+    - Exploration en temps réel via l’API officielle de l’ADEME, permettant d’importer automatiquement les données DPE neuves de plusieurs communes.
+    - Comparaison géographique entre deux communes : visualisation côte à côte des cartes, des DPE dominants, de la consommation moyenne et du coût énergétique moyen.
+    - Génération automatique d’un rapport PDF comparatif entre deux communes :
+        - Inclut les cartes, les statistiques principales, et un aperçu des données utilisées,
+        - Présenté en format A4 paysage avec mise en page professionnelle et logos ADEME + application.
     """)
 
 with st.expander("Prédiction automatisée du DPE"):
     st.markdown("""
-    - Modèle **RandomForest** entraîné sur des données locales.  
-    - Double prédiction :
-      -  **Étiquette DPE estimée** (A à G)  
-      -  **Consommation énergétique prévisionnelle** (kWh/m²/an).  
-    - Interface simple : saisie manuelle ou import CSV.  
+    - Modèle **RandomForest** entraîné sur des données locales (ADEME, Enedis).  
+    - Triple prédiction :
+      -  **Étiquette DPE estimée** Étiquette DPE estimée (A à G) basée uniquement sur les caractéristiques physiques du logement, sans utiliser la consommation réelle.
+      -  **Consommation énergétique prévisionnelle** (kWh/m²/an), calculée à partir des variables structurelles et thermiques du bien.
+      -  **Étiquette DPE finale**, déterminée en incluant la consommation réelle saisie par l’utilisateur ou, à défaut, celle prédite automatiquement par le modèle de consommation.           
+    - Interface simple : saisie guidée.  
     - **Interprétation automatique** des résultats générée par *Mistral AI*.  
     """)
 
@@ -114,7 +119,9 @@ with st.expander("AutoML – Création et évaluation de modèles"):
     - Évaluation sur des métriques robustes :
       - *Accuracy*,  *F1-score*,  *Recall*, *Précision*.  
     - Sélection et visualisation du modèle choisi (matrice de confusion, rapport détaillé).  
-    - **Téléchargement du modèle entraîné** au format `.joblib`.  
+    - **Téléchargement du modèle entraîné** au format `.joblib`.
+    - Génération automatique d’un rapport PDF complet :
+        - Contient la comparaison des modèles, leurs hyperparamètres, et les matrices de confusion correspondantes
     """)
 
 with st.expander("Réentraînement interactif des modèles"):
