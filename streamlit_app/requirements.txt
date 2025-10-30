@@ -4,3 +4,9 @@ plotly
 requests
 kaleido
 streamlit_plotly_events
+joblib
+scikit-learn
+io
+time
+random
+pathlib
