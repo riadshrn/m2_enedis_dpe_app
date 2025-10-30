@@ -25,7 +25,7 @@ API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
 # === HEADER ===
 st.markdown("""
 <div class="main-header fade-in">
-    <h1>📊 Visualisation dynamique des données DPE</h1>
+    <h1>Visualisation dynamique des données DPE</h1>
     <p>Créez des graphiques interactifs à partir des colonnes sélectionnées</p>
 </div>
 """, unsafe_allow_html=True)
@@ -64,7 +64,7 @@ def add_category_orders(kwargs: dict, df: pd.DataFrame, col_names: list):
             kwargs["category_orders"][c] = ORDRE_DPE
 
 # ---------------------------------------------------------
-# 🔧 Fonction : générer un graphique Plotly
+# Fonction : générer un graphique Plotly
 # ---------------------------------------------------------
 def generer_graphique_plotly(
     df: pd.DataFrame,
@@ -82,7 +82,7 @@ def generer_graphique_plotly(
     }
 
     if type_graphique not in types_valides:
-        st.error(f"❌ Type '{type_graphique}' non supporté.")
+        st.error(f"Type '{type_graphique}' non supporté.")
         return None
 
     if df.empty:
@@ -129,7 +129,7 @@ def generer_graphique_plotly(
         return None
 
 # ---------------------------------------------------------
-# 📥 Récupération et chargement des données
+# Récupération et chargement des données
 # ---------------------------------------------------------
 @st.cache_data(ttl=1800)
 def get_colonnes_disponibles():
@@ -147,7 +147,7 @@ def charger_donnees(cols: list):
     try:
         r = requests.get(
             f"{API_BASE}/data/select",
-            params={"columns": cols, "size": 200000},
+            params={"columns": cols, "size": 100000},
             timeout=30
         )
         r.raise_for_status()
@@ -158,36 +158,36 @@ def charger_donnees(cols: list):
         return pd.DataFrame()
 
 # ---------------------------------------------------------
-# 🎛️ Interface principale
+# Interface principale
 # ---------------------------------------------------------
-st.markdown("## ⚙️ Sélection et chargement des données")
+st.markdown("### Sélection et chargement des données")
 colonnes = get_colonnes_disponibles()
 if not colonnes:
     st.stop()
 
 colonnes_sel = st.multiselect(
-    "📦 Choisissez les colonnes à charger depuis l'API :",
+    "Choisissez les colonnes à charger depuis l'API :",
     colonnes,
     default=["surface_habitable_logement", "etiquette_dpe", "conso_m2"]
 )
 
-if st.button("🔄 Charger les données sélectionnées", use_container_width=True):
+if st.button("Charger les données sélectionnées", use_container_width=True):
     st.session_state.df_viz = charger_donnees(colonnes_sel)
 
 df = st.session_state.get("df_viz", pd.DataFrame())
 if df.empty:
-    st.info("🪄 Sélectionnez des colonnes et cliquez sur *Charger les données* pour continuer.")
+    st.info("Sélectionnez des colonnes et cliquez sur *Charger les données* pour continuer.")
     st.stop()
 else:
-    st.success(f"✅ Données chargées ({len(df):,} lignes, {len(df.columns)} colonnes).")
+    st.success(f"Données chargées ({len(df):,} lignes, {len(df.columns)} colonnes).")
 
 if "etiquette_dpe" in df.columns:
     df["etiquette_dpe"] = pd.Categorical(df["etiquette_dpe"], categories=ORDRE_DPE, ordered=True)
 
 # ---------------------------------------------------------
-# 👁️ Visualisation du DataFrame
+# Visualisation du DataFrame
 # ---------------------------------------------------------
-with st.expander("👁️ Voir les données utilisées pour la visualisation"):
+with st.expander("Voir les données utilisées pour la visualisation"):
     st.dataframe(
         df,
         use_container_width=True,
@@ -196,14 +196,14 @@ with st.expander("👁️ Voir les données utilisées pour la visualisation"):
     )
 
 # ---------------------------------------------------------
-# 🎨 Configuration du graphique
+# Configuration du graphique
 # ---------------------------------------------------------
-st.markdown("## 🎨 Configuration du graphique")
+st.markdown("### Configuration du graphique")
 
 c1, c2, c3 = st.columns(3)
 with c1:
     type_graph = st.selectbox("Type de graphique", [
-        "scatter", "line", "bar", "histogram", "box",
+        "scatter", "histogram", "box",
         "violin", "pie", "scatter_3d", "density_heatmap", "area"
     ])
 with c2:
@@ -220,11 +220,11 @@ with c5:
 titre = st.text_input("Titre du graphique", value=f"{type_graph.capitalize()} - {x_col}")
 
 # ---------------------------------------------------------
-# 📈 Génération du graphique
+# Génération du graphique
 # ---------------------------------------------------------
-st.markdown("## 📈 Résultat du graphique")
+st.markdown("### Résultat du graphique")
 
-if st.button("🎨 Générer le graphique", type="primary", use_container_width=True):
+if st.button("Générer le graphique", type="primary", use_container_width=True):
     kwargs = {}
     color_map = build_color_map(df)
     add_category_orders(kwargs, df, ["etiquette_dpe", x_col, y_col])
@@ -270,7 +270,7 @@ if st.button("🎨 Générer le graphique", type="primary", use_container_width=
         st.plotly_chart(fig, use_container_width=True)
                 # ---------- EXPORTS ----------
         st.markdown("---")
-        st.subheader("📤 Exporter les résultats")
+        st.subheader("Exporter les résultats")
 
         from io import BytesIO
         import base64
@@ -278,7 +278,7 @@ if st.button("🎨 Générer le graphique", type="primary", use_container_width=
         c1, c2 = st.columns(2)
         with c1:
             st.download_button(
-                "📁 Télécharger les données (CSV)",
+                "Télécharger les données (CSV)",
                 data=df.to_csv(index=False).encode("utf-8"),
                 file_name="donnees_visualisation.csv",
                 mime="text/csv",
@@ -291,17 +291,17 @@ if st.button("🎨 Générer le graphique", type="primary", use_container_width=
                 # Sauvegarde du graphique en image (nécessite kaleido)
                 fig.write_image(buf, format="png", scale=2)
                 st.download_button(
-                    "🖼️ Télécharger le graphique (PNG)",
+                    "Télécharger le graphique (PNG)",
                     data=buf.getvalue(),
                     file_name="graphique_dpe.png",
                     mime="image/png",
                     use_container_width=True
                 )
             except Exception:
-                st.warning("⚠️ Export PNG indisponible (bibliothèque 'kaleido' manquante). Installez-la avec `pip install kaleido`.")
+                st.warning("Export PNG indisponible (bibliothèque 'kaleido' manquante). Installez-la avec `pip install kaleido`.")
 
     else:
         st.error("Erreur lors de la génération du graphique.")
 
 else:
-    st.info("⚙️ Configurez vos paramètres et cliquez sur *Générer le graphique*.")
+    st.info("Configurez vos paramètres et cliquez sur *Générer le graphique*.")
