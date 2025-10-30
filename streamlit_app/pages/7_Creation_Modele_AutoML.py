@@ -21,6 +21,7 @@ import plotly.express as px
 import plotly.figure_factory as ff
 from pathlib import Path
 from utils.layout import render_sidebar, load_css
+import tempfile
 
 # Charger les styles et la sidebar commune
 load_css()
@@ -38,6 +39,114 @@ st.set_page_config(
     layout="wide"
 )
 st.title("AutoML – Création et évaluation automatique de modèles DPE")
+
+
+
+
+#----------------------------RAPPORT
+def generate_automl_report(df_results, model_params, model_figs):
+    """
+    Génère un rapport AutoML (format paysage) avec tableau des performances,
+    puis une page par modèle : paramètres à gauche, matrice à droite.
+    """
+    from reportlab.lib.pagesizes import landscape, A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import cm
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+    )
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    import tempfile
+    from pathlib import Path
+
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    doc = SimpleDocTemplate(
+        tmp_file.name,
+        pagesize=landscape(A4),
+        leftMargin=1.5 * cm,
+        rightMargin=1.5 * cm,
+        topMargin=1 * cm,
+        bottomMargin=1 * cm
+    )
+
+    styles = getSampleStyleSheet()
+    style_title = ParagraphStyle("TitleCentered", parent=styles["Title"], alignment=1)
+    style_sub = ParagraphStyle("SubHeading", parent=styles["Heading2"], spaceAfter=10)
+    style_normal = ParagraphStyle("Normal", parent=styles["Normal"], leading=14)
+
+    story = []
+
+    # === En-tête ===
+    logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
+    try:
+        story.append(Image(str(logo_path), width=3.5 * cm, height=3.5 * cm))
+    except Exception:
+        story.append(Paragraph("<b>GREENTECH SOLUTIONS</b>", style_normal))
+
+    story.append(Paragraph("<b>Rapport AutoML – Prédiction DPE</b>", style_title))
+    story.append(Spacer(1, 12))
+    story.append(Paragraph(
+        "Ce rapport présente les performances des modèles AutoML pour la prédiction de l’étiquette DPE, "
+        "ainsi que leurs paramètres et matrices de confusion correspondantes.",
+        style_normal
+    ))
+    story.append(Spacer(1, 20))
+
+    # === Tableau comparatif global ===
+    story.append(Paragraph("<b>Comparatif global des modèles</b>", style_sub))
+    df_results = df_results.copy()
+    table_data = [list(df_results.columns)] + df_results.astype(str).values.tolist()
+
+    table = Table(table_data, colWidths=[4.5 * cm] * len(df_results.columns))
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#003366")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 0.25, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+    ]))
+    story.append(table)
+    story.append(PageBreak())
+
+    # === Détails par modèle ===
+    for model_name, params in model_params.items():
+        story.append(Paragraph(f"<b>{model_name}</b>", style_sub))
+        story.append(Spacer(1, 6))
+
+        # --- Partie gauche : paramètres ---
+        param_text = [Paragraph("<b>Paramètres du modèle :</b>", style_normal)]
+        for k, v in params.items():
+            param_text.append(Paragraph(f"• {k}: {v}", style_normal))
+        param_table = Table([[param_text]], colWidths=[12 * cm])
+        param_table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ]))
+
+        # --- Partie droite : matrice de confusion ---
+        if model_name in model_figs:
+            try:
+                img = Image(model_figs[model_name], width=14 * cm, height=9 * cm)
+            except Exception as e:
+                img = Paragraph(f"Erreur chargement image ({e})", style_normal)
+        else:
+            img = Paragraph("Aucune matrice disponible.", style_normal)
+
+        # --- Disposition côte à côte ---
+        row = [[param_table, img]]
+        layout_table = Table(row, colWidths=[12 * cm, 14 * cm])
+        layout_table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.grey),
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.grey),
+        ]))
+
+        story.append(layout_table)
+        story.append(PageBreak())
+
+    doc.build(story)
+    return tmp_file.name
 
 # ---------------------------------------------------------
 # Authentification
@@ -230,7 +339,7 @@ if "df_results" in st.session_state:
         # Téléchargement du modèle
         st.markdown("#### Télécharger ce modèle")
         buf = BytesIO()
-        joblib.dump(model, buf, compress=("xz", 6))
+        joblib.dump(model, buf)
         buf.seek(0)
         st.download_button(
             "Télécharger le modèle sélectionné (.joblib)",
@@ -239,3 +348,61 @@ if "df_results" in st.session_state:
             mime="application/octet-stream",
             use_container_width=True
         )
+
+        # Téléchargement du rappot AutoML
+        if st.button("Générer le rapport AutoML complet"):
+            with st.spinner("Génération du rapport en cours..."):
+
+                # Dataset utilisé
+                df_original = df
+
+                # Tableau comparatif
+                results_comparatifs = df_results
+
+                # Paramètres des modèles
+                params_dict = {}
+                for name, (pipe, _) in models_trained.items():
+                    clf = pipe.named_steps["classifier"]
+                    params_dict[name] = clf.get_params()
+
+                # Figures des modèles (sauvegarde des matrices de confusion)
+                figures_dict = {}
+                for name, (pipe, y_pred) in models_trained.items():
+                    y_test = st.session_state.y_test
+                    cm = confusion_matrix(y_test, y_pred, labels=["A", "B", "C", "D", "E", "F", "G"])
+
+                    # création et sauvegarde temporaire du graphique
+                    fig_cm = ff.create_annotated_heatmap(
+                        z=cm.astype(int),
+                        x=["A", "B", "C", "D", "E", "F", "G"],
+                        y=["A", "B", "C", "D", "E", "F", "G"],
+                        colorscale="Blues",
+                        showscale=True
+                    )
+                    fig_cm.update_layout(title=f"Matrice de confusion – {name}", height=450)
+
+                    img_buf = BytesIO()
+                    fig_cm.write_image(img_buf, format="png", scale=2)
+                    tmp_path = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+                    tmp_path.write(img_buf.getvalue())
+                    tmp_path.close()
+
+                    figures_dict[name] = tmp_path.name
+
+                # Génération du rapport PDF
+                pdf_path = generate_automl_report(
+                    df_results=df_results,
+                    model_params=params_dict,
+                    model_figs=figures_dict
+                )
+
+                # Téléchargement
+                with open(pdf_path, "rb") as f:
+                    st.download_button(
+                        "Télécharger le rapport PDF",
+                        data=f,
+                        file_name="rapport_automl_dpe.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+
