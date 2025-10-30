@@ -12,3 +12,7 @@ joblib>=1.4
 
 # === Machine Learning ===
 scikit-learn>=1.7
+
+# === Export & génération de rapports ===
+reportlab>=4.1
+openpyxl>=3.1
