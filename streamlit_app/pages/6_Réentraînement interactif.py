@@ -29,26 +29,26 @@ st.set_page_config(
     page_icon=logo_path,
     layout="wide"
 )
-st.title("🧠 Réentraînement interactif du modèle DPE")
+st.title("Réentraînement interactif du modèle DPE")
 
 # ------------------------------------------------------------
-# 🔐 Authentification
+# Authentification
 # ------------------------------------------------------------
 PASSWORD = "enedis2025"
-password = st.text_input("🔑 Mot de passe administrateur requis :", type="password")
+password = st.text_input(" Mot de passe administrateur requis :", type="password")
 if password != PASSWORD:
-    st.warning("🔒 Accès restreint — entrez le mot de passe pour continuer.")
+    st.warning("Accès restreint — entrez le mot de passe pour continuer.")
     st.stop()
-st.success("✅ Accès autorisé. Vous pouvez réentraîner le modèle.")
+st.success("Accès autorisé. Vous pouvez réentraîner le modèle.")
 
 # ------------------------------------------------------------
-# 📁 Import ou génération des données
+# Import ou génération des données
 # ------------------------------------------------------------
-st.markdown("### 📤 Importer ou générer un jeu de données")
+st.markdown("### Importer ou générer un jeu de données")
 
 uploaded_file = st.file_uploader("Importer un fichier CSV d'entraînement", type=["csv"])
 
-# 🧠 Utiliser st.session_state pour retenir le dataset généré
+# Utiliser st.session_state pour retenir le dataset généré
 if "df_data" not in st.session_state:
     st.session_state.df_data = None
 
@@ -56,10 +56,10 @@ if "df_data" not in st.session_state:
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
     st.session_state.df_data = df
-    st.success("✅ Fichier chargé avec succès depuis votre ordinateur.")
+    st.success("Fichier chargé avec succès depuis votre ordinateur.")
 
 # Sinon, bouton pour générer un dataset
-elif st.button("⚙️ Générer un dataset synthétique (10000 lignes)"):
+elif st.button("Générer un dataset synthétique (10000 lignes)"):
     with st.spinner("Génération du dataset synthétique en cours..."):
         np.random.seed(42)
         rows = []
@@ -102,27 +102,27 @@ elif st.button("⚙️ Générer un dataset synthétique (10000 lignes)"):
 
         df = pd.DataFrame(rows, columns=cols)
         st.session_state.df_data = df
-        st.success("✅ Dataset synthétique généré avec succès !")
+        st.success("Dataset synthétique généré avec succès !")
 
-# 🔁 Récupérer le dataset persistant (uploadé ou généré)
+# Récupérer le dataset persistant (uploadé ou généré)
 df = st.session_state.df_data
 
 # ------------------------------------------------------------
-# 👁️ Visualisation du dataset
+# Visualisation du dataset
 # ------------------------------------------------------------
 if df is not None:
-    st.markdown("### 👁️ Aperçu des données disponibles")
+    st.markdown("### Aperçu des données disponibles")
     st.dataframe(df, width="stretch", height=300)
-    st.info("💡 La variable cible utilisée pour l'entraînement est **`etiquette_dpe`**.")
+    st.info("La variable cible utilisée pour l'entraînement est **`etiquette_dpe`**.")
 
     # --------------------------------------------------------
-    # 🔁 Réentraînement du modèle
+    # Réentraînement du modèle
     # --------------------------------------------------------
     X = df.drop(columns=["etiquette_dpe"])
     y = df["etiquette_dpe"]
 
-    if st.button("🚀 Lancer le réentraînement sur ces données"):
-        with st.spinner("⏳ Préparation et initialisation du modèle..."):
+    if st.button("Lancer le réentraînement sur ces données"):
+        with st.spinner("Préparation et initialisation du modèle..."):
             import time
             progress = st.progress(0)
             for i in range(0, 30):
@@ -130,7 +130,7 @@ if df is not None:
                 progress.progress(i + 1)
             progress.empty()
 
-        with st.spinner("🧠 Entraînement du modèle en cours..."):
+        with st.spinner("Entraînement du modèle en cours..."):
             import time
             progress = st.progress(0)
 
@@ -178,11 +178,11 @@ if df is not None:
 
             progress.empty()
 
-        st.success("✅ Réentraînement terminé avec succès !")
+        st.success("Réentraînement terminé avec succès !")
 
 
         # --------------------------------------------------------
-        # 📊 Évaluation sur le jeu de test
+        # Évaluation sur le jeu de test
         # --------------------------------------------------------
         y_pred = rf_dpe_conso.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
@@ -190,7 +190,7 @@ if df is not None:
         f1_weighted = f1_score(y_test, y_pred, average="weighted")
 
         # --------------------------------------------------------
-        # 🔢 Dimensions des jeux de données
+        # Dimensions des jeux de données
         # --------------------------------------------------------
         train_size = len(X_train)
         test_size = len(X_test)
@@ -201,20 +201,20 @@ if df is not None:
         c1, c2, c3, c4, c5 = st.columns(5)
 
         # Métriques principales
-        c1.metric("📈 Accuracy (test)", f"{acc:.3f}")
-        c2.metric("⚖️ F1 Macro", f"{f1_macro:.3f}")
-        c3.metric("📊 F1 Pondéré", f"{f1_weighted:.3f}")
+        c1.metric("Accuracy (test)", f"{acc:.3f}")
+        c2.metric("F1 Macro", f"{f1_macro:.3f}")
+        c3.metric("F1 Pondéré", f"{f1_weighted:.3f}")
 
         # Informations sur les splits
-        c4.markdown(f"**🧩 Jeu d'entraînement :** {train_size:,} lignes  \n({train_pct:.1f}%)")
-        c5.markdown(f"**🧪 Jeu de test :** {test_size:,} lignes  \n({test_pct:.1f}%)")
+        c4.markdown(f"**Jeu d'entraînement :** {train_size:,} lignes  \n({train_pct:.1f}%)")
+        c5.markdown(f"**Jeu de test :** {test_size:,} lignes  \n({test_pct:.1f}%)")
 
         # Rapport détaillé
         report = classification_report(y_test, y_pred, output_dict=True)
         report_df = pd.DataFrame(report).transpose()
-        st.markdown("### 📋 Rapport de classification (jeu de test)")
+        st.markdown("### Rapport de classification (jeu de test)")
 
-        markdown_report = "#### 🧾 Résumé des performances par classe\n\n"
+        markdown_report = "#### Résumé des performances par classe\n\n"
         markdown_report += "| Classe | Précision | Rappel | F1-score | Support |\n"
         markdown_report += "|:------:|:----------:|:-------:|:---------:|:--------:|\n"
 
@@ -229,17 +229,38 @@ if df is not None:
 
         st.markdown(markdown_report)
 
-        # Graphique F1-score par classe
+        # Définition du mapping des couleurs DPE (si pas déjà défini plus haut)
+        dpe_color_map = {
+            "A": "#00FF00",   # Vert
+            "B": "#7FFF00",   # Vert clair
+            "C": "#FFFF00",   # Jaune
+            "D": "#FFD700",   # Or
+            "E": "#FFA500",   # Orange
+            "F": "#FF4500",   # Rouge orangé
+            "G": "#FF0000"    # Rouge vif
+        }
+
+        # Graphique F1-score par classe avec couleurs DPE
         f1_per_class = report_df.loc[["A", "B", "C", "D", "E", "F", "G"], "f1-score"].dropna()
+
         fig_f1 = px.bar(
             f1_per_class,
             x=f1_per_class.index,
             y=f1_per_class.values,
             title="F1-score par étiquette DPE (jeu de test)",
-            color=f1_per_class.values,
-            color_continuous_scale="YlOrRd",
+            color=f1_per_class.index,
+            color_discrete_map=dpe_color_map,
             labels={"x": "Étiquette DPE", "y": "F1-score"}
         )
+
+        fig_f1.update_traces(text=f1_per_class.round(2), textposition="outside")
+        fig_f1.update_layout(
+            xaxis_title="Étiquette DPE",
+            yaxis_title="F1-score",
+            margin=dict(l=0, r=0, t=60, b=0),
+            showlegend=False
+        )
+
         st.plotly_chart(fig_f1, use_container_width=True)
 
         # Matrice de confusion
@@ -256,20 +277,33 @@ if df is not None:
         st.plotly_chart(fig_cm, use_container_width=True)
 
         # --------------------------------------------------------
-        # 💾 Téléchargement du modèle réentraîné
+        # Téléchargement du modèle réentraîné
         # --------------------------------------------------------
-        buf = BytesIO()
-        joblib.dump(rf_dpe_conso, buf, compress=("xz", 6))
-        buf.seek(0)
+        with st.spinner("Compression du modèle en cours..."):
+            buf = BytesIO()
+
+            # Barre de progression visuelle
+            progress_text = "Préparation du modèle téléchargeable..."
+            my_bar = st.progress(0, text=progress_text)
+
+            # Compression + simulation d’un léger délai pour l’effet visuel
+            for percent_complete in range(0, 101, 10):
+                time.sleep(0.1) 
+                my_bar.progress(percent_complete, text=progress_text)
+
+            joblib.dump(rf_dpe_conso, buf, compress=("xz", 6))
+            buf.seek(0)
+            my_bar.empty()  # Supprime la barre une fois terminé
+
+        st.success("Modèle prêt au téléchargement !")
 
         st.download_button(
-            "💾 Télécharger le modèle réentraîné (.joblib)",
+            "Télécharger le modèle réentraîné (.joblib)",
             data=buf,
             file_name="rf_dpe_avec_conso_retrained.joblib",
             mime="application/octet-stream",
             use_container_width=True
         )
 
-
 else:
-    st.info("📂 Importez un fichier ou cliquez sur « Générer un dataset synthétique » pour continuer.")
+    st.info("Importez un fichier ou cliquez sur « Générer un dataset synthétique » pour continuer.")
