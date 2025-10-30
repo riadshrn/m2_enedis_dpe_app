@@ -259,11 +259,19 @@ if st.session_state.show_card and st.session_state.selected_row_id is not None:
     st.markdown("#### Fiche technique du logement sélectionné")
 
     try:
-        r = requests.get(f"{API_BASE}/data/detail/{st.session_state.selected_row_id}", timeout=15)
-        r.raise_for_status()
-        lg = r.json().get("logement", {})
+        with st.spinner("Chargement des informations du logement depuis l’API ADEME..."):
+            r = requests.get(
+                f"{API_BASE}/data/detail/{st.session_state.selected_row_id}",
+                timeout=15
+            )
+            r.raise_for_status()
+            lg = r.json().get("logement", {})
+            time.sleep(0.5)  
+
         if lg:
             color = lg.get("color_dpe", "#888")
+            st.success("Données chargées avec succès")
+
             st.markdown(
                 f"""
                 <div style="border: 3px solid {color}; border-radius: 14px; padding: 14px; background-color:#fafafa;">
@@ -281,8 +289,8 @@ if st.session_state.show_card and st.session_state.selected_row_id is not None:
                 unsafe_allow_html=True
             )
         else:
-            st.warning("Aucun logement trouvé.")
+            st.warning("Aucun logement trouvé pour cet identifiant.")
     except Exception as e:
-        st.error(f"Erreur: {e}")
+        st.error(f"Erreur lors de la requête API : {e}")
 
 
