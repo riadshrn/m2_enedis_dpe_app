@@ -8,44 +8,19 @@ import requests
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils.api_utils import call_api
 from utils.dpe_utils import display_dpe_badge, create_dpe_gauge
+from utils.layout import render_sidebar, load_css
 
-# === Configuration ===
-st.set_page_config(page_title="Prédiction IA | DPE Rhône 69", page_icon="🔮", layout="wide")
+logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
+# ========= CONFIG & STYLES =========
+st.set_page_config(
+    page_title="Prédiction DPE & Interprétation IA",
+    page_icon=logo_path,
+    layout="wide"
+)
 
-# === CSS ===
-def load_css():
-    css_file = Path(__file__).parent.parent / "assets" / "styles.css"
-    if css_file.exists():
-        with open(css_file) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# Charger les styles et la sidebar commune
 load_css()
-
-# ==================== SIDEBAR ====================
-with st.sidebar:
-    st.markdown("""
-    <div style='text-align: center; padding: 1rem 0 2rem 0;'>
-        <h1 style='font-size: 1.8rem; margin: 0;'>🏡 DPE Rhône 69</h1>
-        <p style='font-size: 0.9rem; margin-top: 0.4rem; opacity: 0.85;'>Analyse & Prédiction Énergétique</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    st.markdown("""
-    <div style='font-size: 0.85rem; padding: 0 0.5rem;'>
-        <p><strong>📊 Sources de données :</strong></p>
-        <ul style='margin-left: 1rem; line-height: 1.8;'>
-            <li>ADEME (DPE)</li>
-            <li>Enedis (Rhône 69)</li>
-        </ul>
-        <p style='margin-top: 1.5rem;'><strong>🛠️ Technologies :</strong></p>
-        <ul style='margin-left: 1rem; line-height: 1.8;'>
-            <li>FastAPI + Mistral AI</li>
-            <li>Streamlit + Plotly</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
+render_sidebar()
 
 # === API Base URL ===
 API_BASE = "https://riadshrn-api-dpe-conso.hf.space"

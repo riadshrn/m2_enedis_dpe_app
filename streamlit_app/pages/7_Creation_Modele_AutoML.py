@@ -20,22 +20,23 @@ from sklearn.svm import SVC
 import plotly.express as px
 import plotly.figure_factory as ff
 from pathlib import Path
+from utils.layout import render_sidebar, load_css
 
-
-
-# === CSS ===
-def load_css():
-    css_file = Path(__file__).parent.parent / "assets" / "styles.css"
-    if css_file.exists():
-        with open(css_file) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
+# Charger les styles et la sidebar commune
 load_css()
+render_sidebar()
+
 
 # ---------------------------------------------------------
 # ⚙️ Configuration
 # ---------------------------------------------------------
-st.set_page_config(page_title="AutoML – Création de modèle DPE", page_icon="🤖", layout="wide")
+logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
+# ========= CONFIG & STYLES =========
+st.set_page_config(
+    page_title="AutoML – Création de modèle DPE",
+    page_icon=logo_path,
+    layout="wide"
+)
 st.title("🤖 AutoML – Création et évaluation automatique de modèles DPE")
 
 # ---------------------------------------------------------

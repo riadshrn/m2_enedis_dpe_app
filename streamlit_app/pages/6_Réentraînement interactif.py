@@ -14,19 +14,21 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from utils.layout import render_sidebar, load_css
 
-
-# === CSS ===
-def load_css():
-    css_file = Path(__file__).parent.parent / "assets" / "styles.css"
-    if css_file.exists():
-        with open(css_file) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
+# Charger les styles et la sidebar commune
 load_css()
+render_sidebar()
+
 
 # === CONFIG GÉNÉRALE ===
-st.set_page_config(page_title="Réentraînement modèle DPE", page_icon="🧠", layout="wide")
+logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
+# ========= CONFIG & STYLES =========
+st.set_page_config(
+    page_title="Réentraînement modèle DPE",
+    page_icon=logo_path,
+    layout="wide"
+)
 st.title("🧠 Réentraînement interactif du modèle DPE")
 
 # ------------------------------------------------------------

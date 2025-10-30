@@ -4,20 +4,25 @@ import plotly.express as px
 import requests
 from pathlib import Path
 from io import BytesIO
+from utils.layout import render_sidebar, load_css
 
 # === CONFIG ===
-st.set_page_config(page_title="Cartographie DPE Rhône 69", page_icon="🗺️", layout="wide")
+logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
+# ========= CONFIG & STYLES =========
+st.set_page_config(
+    page_title="Cartographie DPE Rhône 69",
+    page_icon=logo_path,
+    layout="wide"
+)
 #API_BASE = "http://localhost:8000"
 API_BASE = "https://riadshrn-api-dpe-conso.hf.space"
 
-# === CSS ===
-def load_css():
-    css_file = Path(__file__).parent.parent / "assets" / "styles.css"
-    if css_file.exists():
-        with open(css_file) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-load_css()
 
+# Charger les styles et la sidebar commune
+load_css()
+render_sidebar()
+
+# === HEADER ===
 st.markdown("""
 <div class="main-header fade-in">
   <h1>🗺️ Cartographie des logements – Rhône (69)</h1>

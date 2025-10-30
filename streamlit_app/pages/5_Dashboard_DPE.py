@@ -8,21 +8,19 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from utils.layout import render_sidebar, load_css
 
+# Charger les styles et la sidebar commune
+load_css()
+render_sidebar()
 
+logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
 # ========= CONFIG & STYLES =========
 st.set_page_config(
     page_title="Dashboard DPE – Rhône (69)",
-    page_icon="📊",
+    page_icon=logo_path,
     layout="wide"
 )
-
-def load_css():
-    css_file = Path(__file__).parent.parent / "assets" / "styles.css"
-    if css_file.exists():
-        with open(css_file) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-load_css()
 
 st.markdown("""
 <div class="main-header fade-in">
