@@ -25,7 +25,7 @@ render_sidebar()
 # === HEADER ===
 st.markdown("""
 <div class="main-header fade-in">
-  <h1>🗺️ Cartographie des logements – Rhône (69)</h1>
+  <h1> Cartographie des logements – Rhône (69)</h1>
   <p>Explorez, filtrez et exportez les données DPE locales</p>
 </div>
 """, unsafe_allow_html=True)
@@ -88,7 +88,7 @@ def load_data_local():
     df = pd.read_csv(csv_path, compression="gzip")
     elapsed = time.time() - start
 
-    st.success(f"✅ Données locales chargées en {elapsed:.2f} s — {len(df):,} lignes.")
+    st.success(f" Données chargées en {elapsed:.2f} s — {len(df):,} lignes.")
     if "row_id" not in df.columns:
         df = df.reset_index(names="row_id")
 
@@ -97,24 +97,24 @@ def load_data_local():
 try:
     df = load_data_local()
 except Exception as e:
-    st.error(f"❌ Erreur lors du chargement local : {e}")
+    st.error(f" Erreur lors du chargement local : {e}")
     st.stop()
 
 if df.empty:
-    st.warning("⚠️ Aucune donnée trouvée dans le fichier local.")
+    st.warning(" Aucune donnée trouvée dans le fichier local.")
     st.stop()
 
 
 # ---------- FILTRES ----------
-st.markdown("## 🎛️ Filtres")
+st.markdown("### Filtres")
 
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    commune_sel = st.multiselect("🏙️ Commune", sorted(df["nom_commune_ban"].dropna().unique()))
+    commune_sel = st.multiselect(" Commune", sorted(df["nom_commune_ban"].dropna().unique()))
 with c2:
-    type_bat_sel = st.multiselect("🏠 Type de bâtiment", sorted(df["type_batiment"].dropna().unique()))
+    type_bat_sel = st.multiselect(" Type de bâtiment", sorted(df["type_batiment"].dropna().unique()))
 with c3:
-    etiquettes_sel = st.multiselect("📊 Étiquette DPE", sorted(df["etiquette_dpe"].dropna().unique()))
+    etiquettes_sel = st.multiselect(" Étiquette DPE", sorted(df["etiquette_dpe"].dropna().unique()))
 with c4:
     surface_range = st.slider("Surface habitable (m²)", 10, int(df["surface_habitable_logement"].max()), (20, 200))
 
@@ -150,7 +150,7 @@ st.success(f"{len(filtered):,} logements affichés (sur {len(df):,})")
 
 # ---------- CARTE ----------
 st.markdown('<div id="cartographie-des-logements-rhone-69"></div>', unsafe_allow_html=True)
-st.markdown("### 🌍 Carte interactive")
+st.markdown("#### Carte interactive")
 
 df_geo = filtered.dropna(subset=["lat", "lon"]).copy()
 color_map = dict(df_geo.groupby("etiquette_dpe")["color_dpe"].first()) or {
@@ -190,8 +190,8 @@ fig.update_traces(marker=dict(opacity=0.85))
 st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True, "displaylogo": False})
 
 # ---------- TABLEAU INTERACTIF ----------
-with st.expander("👁️ Voir les données utilisées pour la carte"):
-    st.caption("💡 Cliquez une ligne pour ouvrir la fiche. Une seule sélection à la fois est autorisée.")
+with st.expander("Voir les données utilisées pour la carte"):
+    st.caption("Cliquez une ligne pour ouvrir la fiche. Une seule sélection à la fois est autorisée.")
     st.dataframe(
         filtered,
         width="stretch",
@@ -220,7 +220,7 @@ if rows:
             st.session_state.selected_row_id = new_row_id
             st.session_state.show_card = True
 
-        # 🔄 Réinitialiser la sélection pour éviter les multiples lignes/états fantômes
+        #  Réinitialiser la sélection pour éviter les multiples lignes/états fantômes
         try:
             st.session_state["filtered_df"]["selection"]["rows"].clear()
         except Exception:
@@ -233,7 +233,7 @@ if rows:
 # Affichage de la fiche sous la carte
 if st.session_state.show_card and st.session_state.selected_row_id is not None:
     st.markdown("---")
-    st.markdown("### 🏠 Fiche technique du logement sélectionné")
+    st.markdown("#### Fiche technique du logement sélectionné")
 
     try:
         r = requests.get(f"{API_BASE}/data/detail/{st.session_state.selected_row_id}", timeout=15)
@@ -268,7 +268,7 @@ st.markdown("---")
 c1, c2 = st.columns(2)
 with c1:
     st.download_button(
-        "📁 Télécharger les données filtrées (CSV)",
+        "Télécharger les données filtrées (CSV)",
         data=filtered.to_csv(index=False).encode("utf-8"),
         file_name="donnees_filtrees_cartographie.csv",
         mime="text/csv",
@@ -279,7 +279,7 @@ with c2:
     buf = BytesIO()
     fig.write_image(buf, format="png", scale=2)
     st.download_button(
-        "🖼️ Enregistrer la carte (PNG)",
+        "Enregistrer la carte (PNG)",
         data=buf.getvalue(),
         file_name="carte_dpe_rhone.png",
         mime="image/png",
