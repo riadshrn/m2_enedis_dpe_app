@@ -470,74 +470,75 @@ if st.session_state.mode_ademe == "comparer":
 
         for i, (c, col) in enumerate(zip([commune_1, commune_2], cols)):
             with col:
-                try:
-                    df_api = fetch_dpe_by_commune(c)
-                    if df_api.empty:
-                        st.warning(f"Aucune donnée pour {c}")
-                        continue
+                with st.spinner(f"Chargement des DPE de **{c}** en temps réel via l’API officielle de l’ADEME..."):
+                    try:
+                        df_api = fetch_dpe_by_commune(c)
+                        if df_api.empty:
+                            st.warning(f"Aucune donnée pour {c}")
+                            continue
 
-                    df_api = preprocess_dpe_api(df_api)
-                    df_api = df_api[df_api["date_reception_dpe"].between(start, end, inclusive="both")].copy()
-                    if df_api.empty:
-                        st.info(f"Aucun nouveau logement pour {c} sur la période sélectionnée.")
-                        continue
+                        df_api = preprocess_dpe_api(df_api)
+                        df_api = df_api[df_api["date_reception_dpe"].between(start, end, inclusive="both")].copy()
+                        if df_api.empty:
+                            st.info(f"Aucun nouveau logement pour {c} sur la période sélectionnée.")
+                            continue
 
-                    df_api["lat_jitter"] = df_api["lat"] + np.random.uniform(-0.0005, 0.0005, size=len(df_api))
-                    df_api["lon_jitter"] = df_api["lon"] + np.random.uniform(-0.0005, 0.0005, size=len(df_api))
+                        df_api["lat_jitter"] = df_api["lat"] + np.random.uniform(-0.0005, 0.0005, size=len(df_api))
+                        df_api["lon_jitter"] = df_api["lon"] + np.random.uniform(-0.0005, 0.0005, size=len(df_api))
 
-                    nb_logements = len(df_api)
-                    mean_conso = df_api["conso_m2"].mean()
-                    mean_cout = df_api["cout_m2"].mean()
-                    dpe_majoritaire = (
-                        df_api["etiquette_dpe"].mode()[0]
-                        if not df_api["etiquette_dpe"].isna().all()
-                        else "N/A"
-                    )
+                        nb_logements = len(df_api)
+                        mean_conso = df_api["conso_m2"].mean()
+                        mean_cout = df_api["cout_m2"].mean()
+                        dpe_majoritaire = (
+                            df_api["etiquette_dpe"].mode()[0]
+                            if not df_api["etiquette_dpe"].isna().all()
+                            else "N/A"
+                        )
 
-                    # === Affichage structuré 2x2 ===
-                    st.markdown(f"### {c}")
-                    m1, m2 = st.columns(2)
-                    m3, m4 = st.columns(2)
-                    m1.metric("🏠 Nouveaux logements", f"{nb_logements:,}")
-                    m2.metric("🏷️ DPE dominant", dpe_majoritaire)
-                    m3.metric("⚡ Conso moyenne", f"{mean_conso:.1f} kWh/m²/an")
-                    m4.metric("💰 Coût moyen", f"{mean_cout:.1f} €/m²/an")
+                        # === Affichage structuré 2x2 ===
+                        st.markdown(f"### {c}")
+                        m1, m2 = st.columns(2)
+                        m3, m4 = st.columns(2)
+                        m1.metric("🏠 Nouveaux logements", f"{nb_logements:,}")
+                        m2.metric("🏷️ DPE dominant", dpe_majoritaire)
+                        m3.metric("⚡ Conso moyenne", f"{mean_conso:.1f} kWh/m²/an")
+                        m4.metric("💰 Coût moyen", f"{mean_cout:.1f} €/m²/an")
 
-                    # === Carte ===
-                    center, zoom = compute_center_zoom(df_api)
-                    fig = px.scatter_mapbox(
-                        df_api,
-                        lat="lat_jitter",
-                        lon="lon_jitter",
-                        color="etiquette_dpe",
-                        color_discrete_map=dict(df_api.groupby("etiquette_dpe")["color_dpe"].first()),
-                        hover_name="nom_commune_ban",
-                        hover_data=["surface_habitable_logement", "conso_m2", "cout_m2", "date_reception_dpe"],
-                        height=600,
-                        zoom=zoom,
-                        title=f"{c} – {nb_logements} logements ({start.date()} → {end.date()})"
-                    )
-                    fig.update_layout(
-                        mapbox_style="open-street-map",
-                        mapbox_center=center,
-                        margin=dict(l=0, r=0, t=40, b=0),
-                        hoverlabel=dict(bgcolor="white", font_size=12)
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
+                        # === Carte ===
+                        center, zoom = compute_center_zoom(df_api)
+                        fig = px.scatter_mapbox(
+                            df_api,
+                            lat="lat_jitter",
+                            lon="lon_jitter",
+                            color="etiquette_dpe",
+                            color_discrete_map=dict(df_api.groupby("etiquette_dpe")["color_dpe"].first()),
+                            hover_name="nom_commune_ban",
+                            hover_data=["surface_habitable_logement", "conso_m2", "cout_m2", "date_reception_dpe"],
+                            height=600,
+                            zoom=zoom,
+                            title=f"{c} – {nb_logements} logements ({start.date()} → {end.date()})"
+                        )
+                        fig.update_layout(
+                            mapbox_style="open-street-map",
+                            mapbox_center=center,
+                            margin=dict(l=0, r=0, t=40, b=0),
+                            hoverlabel=dict(bgcolor="white", font_size=12)
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
 
-                    # === Sauvegarde temporaire pour PDF ===
-                    img_path = Path(tempfile.gettempdir()) / f"carte_{c}.png"
-                    fig.write_image(img_path, scale=2)
+                        # === Sauvegarde temporaire pour PDF ===
+                        img_path = Path(tempfile.gettempdir()) / f"carte_{c}.png"
+                        fig.write_image(img_path, scale=2)
 
-                    rapport_data.append({
-                        "commune": c,
-                        "stats": {"nb": nb_logements, "dpe": dpe_majoritaire, "conso": mean_conso, "cout": mean_cout},
-                        "img_path": img_path,
-                        "df": df_api
-                    })
+                        rapport_data.append({
+                            "commune": c,
+                            "stats": {"nb": nb_logements, "dpe": dpe_majoritaire, "conso": mean_conso, "cout": mean_cout},
+                            "img_path": img_path,
+                            "df": df_api
+                        })
 
-                except Exception as e:
-                    st.error(f"Erreur pour {c} : {e}")
+                    except Exception as e:
+                        st.error(f"Erreur pour {c} : {e}")
 
         # on sauvegarde dans la session pour éviter de perdre au refresh
         if rapport_data:
