@@ -22,7 +22,7 @@ render_sidebar()
 # === HEADER ===
 st.markdown("""
 <div class="main-header fade-in">
-    <h1>🏘️ Contexte des Données Logements – DPE Rhône (69)</h1>
+    <h1>Contexte des Données Logements – DPE Rhône (69)</h1>
     <p>Visualisez, Filtrez, éxportez les données</p>
 </div>
 """, unsafe_allow_html=True)
@@ -55,28 +55,28 @@ def show():
     try:
         with st.spinner("Chargement de 358302 logements via l'API ..."):
             df = pd.read_csv(csv_path, compression="gzip")
-            st.success(f"✅ Données chargées depuis le fichier local — {len(df):,} lignes.")
+            st.success(f"Données chargées  — {len(df):,} lignes.")
     except Exception as e:
-        st.error(f"❌ Erreur lors du chargement du CSV local : {e}")
+        st.error(f"Erreur lors du chargement du CSV local : {e}")
 
     if df.empty:
-        st.error("❌ Aucune donnée trouvée.")
+        st.error("Aucune donnée trouvée.")
         return
 
     # ==================== FILTRES ====================
-    st.subheader("🎛️ Filtres interactifs")
+    st.subheader("Filtres interactifs")
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        commune = st.multiselect("🏙️ Commune", sorted(df["nom_commune_ban"].dropna().unique()))
+        commune = st.multiselect(" Commune", sorted(df["nom_commune_ban"].dropna().unique()))
     with col2:
-        dpe_label = st.multiselect("🏷️ Étiquette DPE", sorted(df["etiquette_dpe"].dropna().unique()))
+        dpe_label = st.multiselect(" Étiquette DPE", sorted(df["etiquette_dpe"].dropna().unique()))
     with col3:
-        energie = st.multiselect("⚡ Énergie principale", sorted(df["type_energie_principale_chauffage"].dropna().unique()))
+        energie = st.multiselect(" Énergie principale", sorted(df["type_energie_principale_chauffage"].dropna().unique()))
     with col4:
-        zone_clim = st.multiselect("🌡️ Zone climatique", sorted(df["zone_climatique"].dropna().unique()))
+        zone_clim = st.multiselect(" Zone climatique", sorted(df["zone_climatique"].dropna().unique()))
     with col5:
-        classe_annee = st.multiselect("🏠 Classe année construction", sorted(df["classe_annee_construction"].dropna().unique()))
+        classe_annee = st.multiselect(" Classe année construction", sorted(df["classe_annee_construction"].dropna().unique()))
 
     filtered_df = df.copy()
     if commune:
@@ -91,7 +91,7 @@ def show():
         filtered_df = filtered_df[filtered_df["classe_annee_construction"].isin(classe_annee)]
 
     # ==================== STATISTIQUES ====================
-    st.subheader("📊 Statistiques globales sur la sélection")
+    st.subheader("Statistiques globales sur la sélection")
 
     total = len(filtered_df)
     mean_surface = filtered_df["surface_habitable_logement"].mean() if total > 0 else 0
@@ -150,7 +150,7 @@ def show():
 
     with col3:
         st.download_button(
-            label="💾 Télécharger les données filtrées (CSV)",
+            label="Télécharger les données filtrées (CSV)",
             data=filtered_df.to_csv(index=False).encode("utf-8"),
             file_name="donnees_filtrees_dpe.csv",
             mime="text/csv",
@@ -158,7 +158,7 @@ def show():
         )
 
     # ==================== AFFICHAGE DU TABLEAU ====================
-    st.subheader("📋 Tableau des logements filtrés")
+    st.subheader("Tableau des logements filtrés")
     st.dataframe(filtered_df, use_container_width=True, height=700)
 
 
