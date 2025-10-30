@@ -28,7 +28,7 @@ render_sidebar()
 
 
 # ---------------------------------------------------------
-# ⚙️ Configuration
+# Configuration
 # ---------------------------------------------------------
 logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
 # ========= CONFIG & STYLES =========
@@ -37,23 +37,23 @@ st.set_page_config(
     page_icon=logo_path,
     layout="wide"
 )
-st.title("🤖 AutoML – Création et évaluation automatique de modèles DPE")
+st.title("AutoML – Création et évaluation automatique de modèles DPE")
 
 # ---------------------------------------------------------
-# 🔐 Authentification
+# Authentification
 # ---------------------------------------------------------
 PASSWORD = "enedis2025"
-password = st.text_input("🔑 Mot de passe administrateur requis :", type="password")
+password = st.text_input("Mot de passe administrateur requis :", type="password")
 if password != PASSWORD:
-    st.warning("🔒 Accès restreint — entrez le mot de passe pour continuer.")
+    st.warning("Accès restreint — entrez le mot de passe pour continuer.")
     st.stop()
-st.success("✅ Accès autorisé. Vous pouvez créer et comparer plusieurs modèles.")
+st.success("Accès autorisé. Vous pouvez créer et comparer plusieurs modèles.")
 
 # ---------------------------------------------------------
-# 🧩 Génération d’un dataset synthétique (10 000 lignes)
+# Génération d’un dataset synthétique (10 000 lignes)
 # ---------------------------------------------------------
-st.markdown("### ⚙️ Génération du dataset synthétique")
-if st.button("🧬 Générer un dataset de 10 000 logements aléatoires"):
+st.markdown("### Génération du dataset synthétique")
+if st.button("Générer un dataset de 10 000 logements aléatoires"):
     with st.spinner("Génération en cours..."):
         np.random.seed(42)
         rows = []
@@ -96,19 +96,19 @@ if st.button("🧬 Générer un dataset de 10 000 logements aléatoires"):
 
         df = pd.DataFrame(rows, columns=cols)
         st.session_state.df_automl = df
-        st.success("✅ Dataset synthétique de 10 000 lignes généré avec succès !")
+        st.success("Dataset synthétique de 10 000 lignes généré avec succès !")
 
 if "df_automl" not in st.session_state:
     st.stop()
 
 df = st.session_state.df_automl
-st.dataframe(df.head(), use_container_width=True)
-st.info("💡 Le modèle tentera de prédire la colonne **etiquette_dpe**.")
+st.dataframe(df, use_container_width=True)
+st.info("Le modèle tentera de prédire la colonne **etiquette_dpe**.")
 
 # ---------------------------------------------------------
-# 🧠 AutoML
+# AutoML
 # ---------------------------------------------------------
-if st.button("🚀 Lancer la création et l’évaluation des modèles"):
+if st.button("Lancer la création et l’évaluation des modèles"):
     with st.spinner("Entraînement et évaluation en cours..."):
         start_time = time.time()
 
@@ -162,16 +162,16 @@ if st.button("🚀 Lancer la création et l’évaluation des modèles"):
         df_results = pd.DataFrame(results).sort_values(by="F1-macro", ascending=False)
         st.session_state.df_results = df_results
         st.session_state.models_trained = models_trained
-        st.success(f"✅ Évaluation terminée en {time.time() - start_time:.1f} secondes.")
+        st.success(f"Évaluation terminée en {time.time() - start_time:.1f} secondes.")
 
 # ---------------------------------------------------------
-# 📊 Résultats comparatifs + sélection d’un modèle
+# Résultats comparatifs + sélection d’un modèle
 # ---------------------------------------------------------
 if "df_results" in st.session_state:
     df_results = st.session_state.df_results
     models_trained = st.session_state.models_trained
 
-    st.markdown("### 📊 Tableau comparatif des performances")
+    st.markdown("### Tableau comparatif des performances")
     st.dataframe(df_results, use_container_width=True)
 
     fig = px.bar(
@@ -188,16 +188,16 @@ if "df_results" in st.session_state:
     st.plotly_chart(fig, use_container_width=True)
 
     # ---------------------------------------------------------
-    # 🔍 Inspection d’un modèle spécifique
+    # Inspection d’un modèle spécifique
     # ---------------------------------------------------------
-    selected_model = st.selectbox("🔎 Sélectionnez un modèle à inspecter :", df_results["Modèle"])
+    selected_model = st.selectbox("Sélectionnez un modèle à inspecter :", df_results["Modèle"])
 
     if selected_model:
         model, y_pred = models_trained[selected_model]
         X = st.session_state.df_automl.drop(columns=["etiquette_dpe"])
         y = st.session_state.df_automl["etiquette_dpe"]
 
-        st.markdown(f"### 📄 Fiche du modèle : **{selected_model}**")
+        st.markdown(f"### Fiche du modèle : **{selected_model}**")
         row = df_results[df_results["Modèle"] == selected_model].iloc[0]
         c1, c2, c3, c4, c5 = st.columns(5)
         c1.metric("Accuracy", row["Accuracy"])
@@ -207,7 +207,7 @@ if "df_results" in st.session_state:
         c5.metric("Temps (s)", row["Temps (s)"])
 
         # Matrice de confusion
-        st.markdown("#### 🔢 Matrice de confusion")
+        st.markdown("#### Matrice de confusion")
 
         y_test = st.session_state.y_test
         cm = confusion_matrix(y_test, y_pred, labels=["A", "B", "C", "D", "E", "F", "G"])
@@ -228,12 +228,12 @@ if "df_results" in st.session_state:
         st.plotly_chart(fig_cm, use_container_width=True)
 
         # Téléchargement du modèle
-        st.markdown("#### 💾 Télécharger ce modèle")
+        st.markdown("#### Télécharger ce modèle")
         buf = BytesIO()
         joblib.dump(model, buf, compress=("xz", 6))
         buf.seek(0)
         st.download_button(
-            "📥 Télécharger le modèle sélectionné (.joblib)",
+            "Télécharger le modèle sélectionné (.joblib)",
             data=buf,
             file_name=f"{selected_model}_trained.joblib",
             mime="application/octet-stream",
