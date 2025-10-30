@@ -46,20 +46,20 @@ with st.container():
     c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
         communes = sorted(df["nom_commune_ban"].dropna().unique().tolist())
-        commune_sel = st.multiselect("🏙️ Commune", communes)
+        commune_sel = st.multiselect("Commune", communes)
     with c2:
         types_bat = sorted(df["type_batiment"].dropna().unique().tolist())
-        type_bat_sel = st.multiselect("🏠 Type de bâtiment", types_bat)
+        type_bat_sel = st.multiselect("Type de bâtiment", types_bat)
     with c3:
         etiquettes = ["A","B","C","D","E","F","G"]
-        etiquettes_sel = st.multiselect("📊 Étiquette DPE", etiquettes)
+        etiquettes_sel = st.multiselect("Étiquette DPE", etiquettes)
     with c4:
         classes_annee = [x for x in df["classe_annee_construction"].dropna().unique().tolist() if isinstance(x, str)]
         classes_annee = sorted(classes_annee)
-        classe_annee_sel = st.multiselect("🏗️ Classe année construction", classes_annee)
+        classe_annee_sel = st.multiselect("Classe année construction", classes_annee)
     with c5:
         energies = sorted(df["type_energie_principale_chauffage"].dropna().unique().tolist())
-        energie_sel = st.multiselect("🔥 Type d’énergie principale", energies)
+        energie_sel = st.multiselect("Type d’énergie principale", energies)
 
 
     n1, n2, n3 = st.columns(3)
@@ -96,23 +96,39 @@ filtered = filtered[
 
 
 # ========= KPI =========
-st.markdown("### KPI")
+st.markdown("#### Indicateurs clés")
 k1, k2, k3, k4 = st.columns(4)
 
+def metric_card(title, value):
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #003366 0%, #33CC33 100%);
+        padding: 0.1rem;
+        border-radius: 12px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    ">
+        <h3 style="margin:0; font-size:1rem; opacity:0.9;">{title}</h3>
+        <h2 style="margin-top:0.3rem; font-size:1.8rem;">{value}</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
 with k1:
-    st.metric("🏠 Logements", f"{len(filtered):,}/{len(df):,}")
+    metric_card("Logements", f"{len(filtered):,}/{len(df):,}")
 
 with k2:
     moy_conso = filtered["conso_m2"].mean()
-    st.metric("⚡ Conso moyenne (kWh/m²/an)", f"{moy_conso:.1f}" if pd.notna(moy_conso) else "—")
+    metric_card("Conso moyenne (kWh/m²/an)", f"{moy_conso:.1f}" if pd.notna(moy_conso) else "—")
 
 with k3:
     moy_cout = filtered["cout_m2"].mean()
-    st.metric("💶 Coût moyen (€/m²/an)", f"{moy_cout:.1f}" if pd.notna(moy_cout) else "—")
+    metric_card("Coût moyen (€/m²/an)", f"{moy_cout:.1f}" if pd.notna(moy_cout) else "—")
 
 with k4:
     moy_ges = filtered["emission_ges_5_usages"].mean()
-    st.metric("🌍 GES moyen (kgCO₂e/an)", f"{moy_ges:.1f}" if pd.notna(moy_ges) else "—")
+    metric_card("GES moyen (kgCO₂e/an)", f"{moy_ges:.1f}" if pd.notna(moy_ges) else "—")
+
 
 
 # ========= OUTILS COMMUNS VISU =========
@@ -551,12 +567,12 @@ with st.expander("Voir / exporter les données filtrées"):
                     if fig_to_export is not None:
                         html_bytes = fig_to_export.to_html(include_plotlyjs="cdn").encode("utf-8")
                         st.download_button(
-                            "⬇️ Télécharger le fichier HTML",
+                            "Télécharger le fichier HTML",
                             data=html_bytes,
                             file_name=f"visualisation_{export_choice.replace(' ', '_')}.html",
                             mime="text/html",
                             use_container_width=True
                         )
                     else:
-                        st.warning("❌ Impossible d’exporter : cette visualisation ne contient pas de données.")
+                        st.warning("Impossible d’exporter : cette visualisation ne contient pas de données.")
 
