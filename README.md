@@ -1,4 +1,8 @@
-# DPE Rhône 69 — Analyse & Prédiction Énergétique
+# DPE Vision AI — Analyse & Prédiction Énergétique du Rhône
+
+<p align="center">
+  <img src="./img/logo.jpg" alt="DPE Vision AI Logo" width="180">
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white" />
@@ -13,7 +17,9 @@
 
 ## Présentation du projet
 
-L’application **DPE Rhône 69** combine données publiques et intelligence artificielle pour démocratiser l'accès à l'information énergétique dans le département du Rhône à partir des données ouvertes **ADEME** et **Enedis**.
+**DPE Vision AI** combine les **données énergétiques publiques** (ADEME & Enedis) avec l’**intelligence artificielle** afin de rendre accessible l’analyse énergétique du parc immobilier du **Rhône (69)**.  
+
+L’application permet à la fois d’**explorer**, **visualiser**, **prédire** et **comparer** les performances énergétiques des logements en temps réel grâce à l’API officielle de l’ADEME.
 
 ###  Déploiement en ligne
 **Application Streamlit** : [https://riadshrn-streamlit-dpe-app.hf.space/](https://riadshrn-streamlit-dpe-app.hf.space/) 
@@ -21,32 +27,91 @@ L’application **DPE Rhône 69** combine données publiques et intelligence art
 
 
 ---
+## Objectifs du projet
 
-##  Objectifs principaux
+- Démocratiser l’accès à la performance énergétique des logements.
 
--  **Analyser** les consommations et émissions énergétiques par commune  
--  **Prédire** automatiquement l’étiquette DPE à partir des caractéristiques d’un logement  
--  **Estimer** la consommation énergétique (kWh/m²/an et MWh/an)  
--  **Interpréter** les résultats à l’aide d’un modèle de langage (Mistral AI)  
--  **Visualiser** les données sur une carte interactive  
--  **Comparer** les moyennes locales par commune  
+- Fournir des outils d’aide à la décision pour les collectivités et les particuliers.
+
+- Exploiter la puissance de l’IA pour améliorer la compréhension et la prédiction du DPE.
+
+- Valoriser les données ouvertes et favoriser une transition énergétique plus transparente.
 
 ---
 
-##  Architecture du projet
+## Fonctionnalités principales
 
-```
-m2_enedis_dpe_app/
-│
-├── app/                      → API FastAPI (backend)
-├── streamlit_app/            → Interface Streamlit (frontend)│
-├── data/                     → Données (ADEME, Enedis, IRIS ...)
-├── models/                   → Dossiers de modèles complets
-├── notebooks/                → Analyses exploratoires & modélisation
-├── docker-compose.yml        → Orchestration multi-conteneurs
-└── academic_reports/          → Rapport d’étude 
-```
+<details>
+<summary><strong>Exploration & Visualisation</strong></summary>
 
+- Visualisation dynamique des **indicateurs énergétiques du Rhône (69)** à partir des données ADEME & Enedis.  
+- Tableaux de bord interactifs avec filtres (commune, année, type de bâtiment...).  
+- Graphiques exportables en **CSV / PNG**.  
+
+</details>
+
+---
+
+<details>
+<summary><strong>Cartographie & Données ADEME</strong></summary>
+
+- **Carte interactive** des logements colorée selon leur étiquette énergétique (A → G).  
+- Exploration **en temps réel** via l’**API officielle ADEME** (données DPE neuves).  
+- **Filtres avancés** : commune, code postal, type de bâtiment, étiquette, consommation, coût, période.  
+- **Comparaison géographique** entre deux communes :  
+  - DPE dominant, consommation moyenne, coût moyen.  
+  - Génération automatique d’un **rapport PDF comparatif** :
+    - Cartes côte à côte  
+    - Statistiques et aperçu des données  
+    - Format **A4 paysage** avec les logos ADEME + application.  
+
+</details>
+
+---
+
+<details>
+<summary><strong>Prédiction & Interprétation</strong></summary>
+
+- Modèle **Random Forest** local entraîné sur les données ADEME + Enedis.  
+- Triple prédiction :
+  - **Étiquette DPE estimée** : basée uniquement sur les caractéristiques physiques du logement.  
+  - **Consommation énergétique prévisionnelle** (kWh/m²/an).  
+  - **Étiquette DPE finale** : en intégrant la consommation réelle saisie ou prédite.  
+- **Interprétation automatique IA** via *Mistral AI* (explication textuelle des résultats).  
+
+</details>
+
+---
+
+<details>
+<summary><strong>AutoML & Réentraînement</strong></summary>
+
+- Génération automatique d’un **jeu de données simulé (10 000 logements)**.  
+- Entraînement & comparaison de plusieurs modèles :
+  - *RandomForest*, *DecisionTree*, *GradientBoosting*, *AdaBoost*, *LogisticRegression*, *KNN*, *SVM*.  
+- Calcul des métriques : *Accuracy*, *F1-score*, *Recall*, *Précision*, *Temps d’exécution*.  
+- **Visualisation des matrices de confusion**.  
+- Génération automatique d’un **rapport PDF AutoML** :
+  - Comparatif des modèles, hyperparamètres, matrices de confusion.  
+- Téléchargement direct du modèle `.joblib`.  
+
+</details>
+
+---
+
+<details>
+<summary><strong>Réentraînement & Interprétation IA</strong></summary>
+
+- Importation d’un **nouveau dataset** ou utilisation des données existantes.  
+- Réentraînement complet avec suivi des performances (*train/test split*).  
+- Génération automatique :
+  - Rapport de classification (par classe).  
+  - Matrice de confusion annotée.  
+  - Graphique des F1-score.  
+- **Interprétation Mistral AI** des résultats :  
+  - Analyse textuelle, explication du DPE et recommandations d’amélioration.
+
+</details>
 ---
 
 ## Schéma général de l’écosystème applicatif
@@ -106,20 +171,6 @@ flowchart TD
     
 
 ```
-
----
-
-##  Fonctionnalités principales
-
-| Catégorie | Fonctionnalité |
-|------------|----------------|
-|  **Visualisation** | Carte interactive des logements du Rhône avec couleurs par étiquette DPE |
-|  **Dashboard DPE** | Analyse de la distribution énergétique et des émissions GES |
-|  **Prédiction IA** | Estimation de la classe énergétique et de la consommation annuelle |
-|  **Interprétation automatique** | Conseils générés par Mistral AI |
-|  **Exports** | Téléchargement des données filtrées (CSV) et graphiques (PNG) |
-|  **API REST** | Endpoints pour prédiction, données et métadonnées |
-|  **Docker** | Conteneurisation et déploiement multi-service |
 
 ---
 
