@@ -54,9 +54,6 @@ Ce n’est pas juste un modèle académique : c’est un prototype d’outil d�
 - **Géolocalisation / contexte climatique**  
   Rattachement des logements à leur zone climatique et à leur zone IRIS → utile pour capturer l’effet du climat local et du contexte urbain.
 
-📸 *Figure 2 – Schéma pipeline de préparation des données (extrait du notebook 02 / 03)*  
-_(tu pourras coller ici le schéma de fusion/cleaning ou la cellule où tu montres la jointure ADEME ↔ Enedis ↔ IRIS)_
-
 ---
 
 ## Flux de traitement
@@ -202,7 +199,7 @@ Principales features construites :
    - Le résultat final enrichi est `df_adem_enedis_iris_69.csv`.
 
         <p align="center">
-          <img src="./resultats_notebooks/IRIS_Carte.png" alt="Carte" width="70%">
+          <img src="./resultats_notebooks/IRIS_carte.png" alt="Carte" width="70%">
         </p>
 
 6. **Regroupement des classes DPE pour l’apprentissage**
@@ -422,7 +419,7 @@ Une validation croisée à 5 folds (ou GridSearch selon le modèle) a permis de 
 | XGBoost         | 0.262 | 0.196 | 0.731 |
 | LightGBM        | 0.262 | 0.196 | 0.731 |
 
-➡ **RandomForest** reste le meilleur compromis entre robustesse, stabilité et simplicité d’intégration.
+**RandomForest** reste le meilleur compromis entre robustesse, stabilité et simplicité d’intégration.
 
 ---
 
@@ -527,6 +524,21 @@ L’ensemble du code est  **paramétré avec une graine fixe random_state = 42**
 - Modèle 2 : R² ~0.871 ±1.2 pts  
 - Modèle 3 supervisé : F1 macro ~98.7% ±0.4 pts  
 → Les performances sont stables d’un fold à l’autre : pas de surapprentissage massif observé. 
+
+### 4.5 Interprétation automatique des résultats via LLM (Mistral)
+
+Afin d’améliorer la compréhension des résultats de prédiction, l’application Streamlit intègre un **module d’interprétation automatique** basé sur un **modèle de langage Mistral** (LLM open-source).
+
+Lorsqu’un utilisateur obtient la prédiction de son logement :
+- le **modèle DPE** calcule la classe énergétique et la consommation estimée ;
+- ces résultats sont ensuite transmis à une **API Mistral**, qui génère une **explication textuelle claire et personnalisée**.
+
+L’objectif est de rendre les résultats plus accessibles à un public non technique :
+- expliquer les **facteurs principaux** ayant influencé la prédiction (isolation, ancienneté, énergie, volume, etc.) ;
+- fournir des **recommandations d’amélioration énergétique** adaptées au profil du logement ;
+- reformuler le résultat de manière **pédagogique et contextualisée**.
+
+Ce module permet de **rendre le modèle explicable et utile dans une logique d’aide à la décision**, en combinant la rigueur des algorithmes de Machine Learning avec la **capacité de raisonnement et de reformulation** du LLM Mistral.
 
 
 ---
