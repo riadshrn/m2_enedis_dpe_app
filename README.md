@@ -50,7 +50,6 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 </details>
 
----
 
 <details>
 <summary><strong>Cartographie & Données ADEME</strong></summary>
@@ -67,7 +66,6 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 </details>
 
----
 
 <details>
 <summary><strong>Prédiction & Interprétation</strong></summary>
@@ -81,7 +79,6 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 </details>
 
----
 
 <details>
 <summary><strong>AutoML & Réentraînement</strong></summary>
@@ -97,7 +94,6 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 </details>
 
----
 
 <details>
 <summary><strong>Réentraînement & Interprétation IA</strong></summary>
@@ -112,6 +108,7 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
   - Analyse textuelle, explication du DPE et recommandations d’amélioration.
 
 </details>
+
 ---
 
 ## Schéma général de l’écosystème applicatif
