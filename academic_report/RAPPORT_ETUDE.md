@@ -56,7 +56,7 @@ Ce n’est pas juste un modèle académique : c’est un prototype d’outil d�
 
 ---
 
-## Flux de traitement
+### 2.2 Flux de traitement
 
 ```mermaid
 graph LR
@@ -70,7 +70,7 @@ P[IRIS_RHONE -<br> API data.gouv] -. Jointure spatiale .-> C
 S --> H[Analyse et Modélisation DPE]
 ``` 
 
-###  Sources de données utilisées
+### 2.3   Sources de données utilisées
 
 | Source                                      | Fichier local                     | Type de données                                          | Origine / API                                                                                   | Description synthétique |
 |--------------------------------------------|-----------------------------------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------|
@@ -80,7 +80,7 @@ S --> H[Analyse et Modélisation DPE]
 | Grand Lyon – Données géospatiales IRIS Rhône| `IRIS_RHONE data.grandlyon`       | Contours géographiques des zones IRIS du Rhône           | [data.gouv.fr](https://www.data.gouv.fr/datasets/contours-iris-r-2)                             | Données géographiques officielles pour la jointure spatiale (rattachement des logements). |
 | Jeu final fusionné                          | `df_adem_enedis_iris_69.csv`      | Données nettoyées et enrichies ADEME × Enedis × IRIS     | —                                                                                                | Base finale utilisée pour l’analyse exploratoire et la modélisation énergétique. |
 
-#### 2.2.2 Nettoyage des données
+### 2.4 Nettoyage des données
 
 Le notebook `03_data_cleaning.ipynb` applique des règles de qualité pour éliminer les enregistrements absurdes ou incohérents.
 
@@ -105,7 +105,7 @@ Le notebook `03_data_cleaning.ipynb` applique des règles de qualité pour élim
 Résultat attendu après ces filtres : un dataset propre, cohérent physiquement, représentatif.
 
 
-#### 2.2.3 Analyse exploratoire (EDA) des variables énergétiques
+### 2.5 Analyse exploratoire (EDA) des variables énergétiques
 
 Le notebook `04_eda_visualization.ipynb` fait l’EDA sur les données ADEME nettoyées, avant enrichissement Enedis.
 
@@ -148,7 +148,7 @@ Points majeurs issus de l’EDA :
    - Décision : supprimer ces colonnes redondantes pour éviter la multicolinéarité et réduire le bruit.
 
 
-#### 2.2.4 Feature engineering (incluant enrichissement territorial)
+### 2.6 Feature engineering (incluant enrichissement territorial)
 
 Le cœur du travail de préparation se fait ici. C’est ce qui transforme les données brutes en variables explicatives pertinentes pour le modèle.  
 Il est réalisé dans `04_eda_visualization.ipynb`, `05_enedis_merge.ipynb`, `06_eda_merged_iris.ipynb` et finalisé dans `07_modélisation_preparation.ipynb`.
@@ -215,7 +215,7 @@ Principales features construites :
         </p>  
 
 
-#### 2.2.5 Jeu d’entraînement final
+## 3 Jeu d’entraînement final
 
 À l’issue de ces étapes :
 - On obtient un dataset prêt pour le Machine Learning contenant :
@@ -225,13 +225,13 @@ Principales features construites :
   - du contexte territorial (consommation moyenne IRIS, zone climatique),
   - la cible `etiquette_dpe_grp` (A_B / C / D / E / F_G).
  
-### 2.3 Équilibrage des classes pour l'apprentissage
+### 3.1 Équilibrage des classes pour l'apprentissage
 Le DPE est très déséquilibré : très peu de A/B, beaucoup de C/D/E.  
 On a :
 - regroupé les classes en 5 catégories : `A_B`, `C`, `D`, `E`, `F_G`.
 - appliqué **SMOTE** pour rééquilibrer lors de l'entraînement.
 
-### 2.4 Conclusion de l’exploration (EDA final)
+### 3.2 Conclusion de l’exploration (EDA final)
 
 ##### Variables conservées pour la modélisation
 - **Numériques** :  
@@ -266,9 +266,9 @@ On a :
 
 ---
 
-## 3. Méthodologie de Modélisation
+## 4. Méthodologie de Modélisation
 
-### 3.1 Vue d’ensemble des modèles
+### 4.1 Vue d’ensemble des modèles
 
 À partir du dataset enrichi et nettoyé, trois modèles complémentaires ont été développés :
 
@@ -292,9 +292,7 @@ Ce design modulaire permet à l’application de fonctionner dans deux situation
 
 ---
 
-### 3.2 Préparation des données et pipeline ML
-
-#### Étapes de modélisation et justification
+### 4.2 Étapes de modélisation et justification
 
 L’objectif global de la modélisation est double :
 1. **Prédire la classe énergétique (étiquette DPE)** à partir des caractéristiques du logement.
@@ -302,7 +300,7 @@ L’objectif global de la modélisation est double :
 
 ---
 
-#### 01. Construction du premier modèle — Classification DPE
+#### 4.2.1 Construction du premier modèle — Classification DPE
 
 Nous avons commencé par entraîner un premier modèle de classification sur **l’ensemble des données disponibles**, incluant les variables de consommation (`conso_m2`, etc.), afin d’analyser les corrélations avec la cible `etiquette_dpe_regroupee`.
 
@@ -331,8 +329,9 @@ Pour éviter un modèle trivial et non généralisable, nous avons ensuite déci
 **Le modèle est sauvegardé (avec consommation) afin de permettre la comparaison ultérieure avec la version enrichie.**
 
 ---
+#### 4.2.2 Construction du premier modèle — Classification DPE ++
 
-#### 02. Variables retenues pour le nouveau modèle prédictif
+##### 01. Variables retenues pour le nouveau modèle prédictif
 
 L’objectif de ce modèle est de **prédire l’étiquette DPE regroupée** à partir des **caractéristiques physiques et thermiques du logement**,  
 sans utiliser de mesures directes de consommation énergétique (`conso_m2`, `conso_ecs_ep`, etc.).
@@ -349,7 +348,7 @@ Ces variables ont été retenues car :
 
 ---
 
-#### 03. Entraînement et sélection du modèle de classification
+##### 02. Entraînement et sélection du modèle de classification
 
 Le pipeline de modélisation suit la structure suivante :
 - **Découpage des données** : 80 % entraînement / 20 % test, stratifié sur la classe DPE regroupée.  
@@ -377,7 +376,7 @@ Le modèle est sauvegardé `.joblib`
 
 ---
 
-#### 04. Modèle de régression énergétique — Prédiction de la consommation
+#### 4.2.3 Modèle de régression énergétique — Prédiction de la consommation
 
 Une seconde modélisation vise à estimer la **consommation spécifique (`conso_m2`)**.
 
@@ -393,7 +392,7 @@ Cependant, la variable cible `conso_m2` a été **transformée en logarithme** (
 
 ---
 
-#### 05. Comparaison des algorithmes de régression
+##### 01. Comparaison des algorithmes de régression
 
 Trois algorithmes principaux ont été testés :
 
@@ -423,7 +422,7 @@ Une validation croisée à 5 folds (ou GridSearch selon le modèle) a permis de 
 
 ---
 
-#### 06. Remise à l’échelle et validation finale
+##### 02. Remise à l’échelle et validation finale
 
 Les prédictions ont été reconverties à l’échelle réelle via :
 ```python
@@ -440,7 +439,7 @@ Après suppression de quelques valeurs aberrantes (consommations > 2000 kWh/m²/
 
 ---
 
-#### 07. Sauvegarde et intégration API
+### 4.3 Sauvegarde et intégration API
 
 Les modèles finaux (`dpe avec conso` et `dpe sans conso` et `conso`) ont été :
 - compressés avec **joblib** pour un chargement rapide dans l’API FastAPI,
@@ -452,7 +451,7 @@ Les modèles finaux (`dpe avec conso` et `dpe sans conso` et `conso`) ont été 
 
 ---
 
-### 3.3 Indicateurs d’évaluation
+### 4.5 Indicateurs d’évaluation
 
 Chaque type de modèle est évalué avec des métriques adaptées à sa tâche :
 
@@ -468,7 +467,7 @@ Chaque type de modèle est évalué avec des métriques adaptées à sa tâche :
 
 ---
 
-### 3.4 Validation et reproductibilité
+### 4.6 Validation et reproductibilité
 
 Validations croisées et les tests de robustesse : 
 
@@ -495,15 +494,15 @@ L’ensemble du code est  **paramétré avec une graine fixe random_state = 42**
 
 ---
 
-## 4. Résultats & KPI
+## 4.7 Résultats & KPI
 
-### 4.1 Modèle 1 — Prédiction directe du DPE
+### 4.7.1 Modèle 1 — Prédiction directe du DPE
 - Accuracy globale : **79.0%**
 - F1-score macro : **76.9%**
 - Les classes extrêmes (`A_B` et `F_G`) restent bien identifiées (F1 > 80%), ce qui est critique pour repérer les passoires énergétiques. 
 
 
-### 4.2 Modèle 2 — Prédiction conso kWh/m²/an
+### 4.7.2 Modèle 2 — Prédiction conso kWh/m²/an
 - R² : **0.872**
 - RMSE : **28.4 kWh/m²/an**
 - MAE : **21.7 kWh/m²/an**
@@ -511,7 +510,7 @@ L’ensemble du code est  **paramétré avec une graine fixe random_state = 42**
 - La transformation logarithmique sur la cible améliore la stabilité du modèle (RMSE -18%).
 
 
-### 4.3 Modèle 3 — DPE augmenté
+### 4.7.3 Modèle 3 — DPE augmenté
 - Mode supervisé (l'utilisateur donne sa conso réelle)  
   → Accuracy : **~99%**  
   → Utilisable comme “validation rapide” d’un DPE existant.
@@ -519,13 +518,13 @@ L’ensemble du code est  **paramétré avec une graine fixe random_state = 42**
   → Accuracy : **~67%**  
   → Perte due à la propagation d’erreur entre les deux modèles.
 
-### 4.4 Robustesse (Validation croisée 5-fold)
+### 4.7.4 Robustesse (Validation croisée 5-fold)
 - Modèle 1 : Accuracy ~79% ±1.6 pts, F1 macro ~76.5% ±1.8 pts  
 - Modèle 2 : R² ~0.871 ±1.2 pts  
 - Modèle 3 supervisé : F1 macro ~98.7% ±0.4 pts  
 → Les performances sont stables d’un fold à l’autre : pas de surapprentissage massif observé. 
 
-### 4.5 Interprétation automatique des résultats via LLM (Mistral)
+## 5. Interprétation automatique des résultats via LLM (Mistral)
 
 Afin d’améliorer la compréhension des résultats de prédiction, l’application Streamlit intègre un **module d’interprétation automatique** basé sur un **modèle de langage Mistral** (LLM open-source).
 
@@ -543,7 +542,7 @@ Ce module permet de **rendre le modèle explicable et utile dans une logique d�
 
 ---
 
-## Conclusion
+## 6. Conclusion
 
 Nous avons construit :
 - un pipeline de traitement de données énergétiques réelles à l’échelle d’un département,
