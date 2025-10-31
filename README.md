@@ -27,17 +27,6 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 
 ---
-## Objectifs du projet
-
-- Démocratiser l’accès à la performance énergétique des logements.
-
-- Fournir des outils d’aide à la décision pour les collectivités et les particuliers.
-
-- Exploiter la puissance de l’IA pour améliorer la compréhension et la prédiction du DPE.
-
-- Valoriser les données ouvertes et favoriser une transition énergétique plus transparente.
-
----
 
 ## Fonctionnalités principales
 
