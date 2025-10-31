@@ -100,6 +100,21 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 ---
 
+## Structure du dépôt
+
+| Dossier / Fichier |  Description |
+|--------------------|--------------|
+| **app/** | Contient l’**API FastAPI** – endpoints de prédiction, d’interprétation IA et de gestion des requêtes. |
+| **streamlit_app/** | Interface **Streamlit** principale : visualisation, cartographie ADEME, AutoML, rapports techniques et fonctionnels. |
+| **data/** | Données **ADEME** et **Enedis** (Rhône 69) nettoyées et prêtes pour l’analyse. |
+| **models/** | Modèles **Machine Learning** modèlisés . |
+| **notebooks/** | Analyses exploratoires (**EDA**), préparation des features et essais de modèles prédictifs. |
+| **academic_report/** |  Rapports Markdown complets (étude, technique, fonctionnelle). |
+| **docker-compose.yml** | Configuration du déploiement multi-conteneurs (**FastAPI + Streamlit**) via **Docker Compose**. |
+
+
+---
+
 ## Schéma général de l’écosystème applicatif
 
 ```mermaid
