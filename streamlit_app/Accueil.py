@@ -1,6 +1,8 @@
 import streamlit as st
 from pathlib import Path
 from utils.layout import render_sidebar, load_css
+import base64
+import re
 
 logo_path = Path(__file__).parent.parent / "assets" / "logo-removebg.png"
 
@@ -167,3 +169,58 @@ with st.expander("Architecture & intégration"):
     - **Sources :** ADEME (DPE) + Enedis (consommations énergétiques du Rhône 69)  
     """)
 
+
+st.markdown("## Rapports du projet DPE Vision AI")
+
+# --- DÉFINIR LES CHEMINS ---
+rapports_dir = Path(__file__).parent / "rapports"
+img_dir = Path(__file__).parent / "img"
+
+# --- LISTE DES RAPPORTS DISPONIBLES ---
+rapports = {
+    "Rapport technique": "DOCUMENTATION_TECHNIQUE.md",
+    "Rapport fonctionnel": "DOCUMENTATION_FONCTIONNELLE.md",
+    "Rapport d’étude": "RAPPORT_ETUDE.md"
+}
+
+# --- BARRE DE BOUTONS ---
+col1, col2, col3 = st.columns(3)
+for i, (titre, fichier) in enumerate(rapports.items()):
+    with [col1, col2, col3][i]:
+        if st.button(titre, use_container_width=True):
+            st.session_state.rapport_selectionne = fichier
+
+# --- INITIALISATION ---
+if "rapport_selectionne" not in st.session_state:
+    st.session_state.rapport_selectionne = None
+
+# --- AFFICHAGE DU RAPPORT SÉLECTIONNÉ ---
+if st.session_state.rapport_selectionne:
+    rapport_path = rapports_dir / st.session_state.rapport_selectionne
+
+    if rapport_path.exists():
+        contenu = rapport_path.read_text(encoding="utf-8")
+
+        # --- Conversion automatique des images ---
+        matches = re.findall(r'src="\.\./img/([^"]+)"', contenu)
+        for filename in matches:
+            img_path = img_dir / filename
+            if img_path.exists():
+                with open(img_path, "rb") as img_file:
+                    img_base64 = base64.b64encode(img_file.read()).decode()
+                contenu = contenu.replace(
+                    f"../img/{filename}",
+                    f"data:image/png;base64,{img_base64}"
+                )
+            else:
+                st.warning(f"Image introuvable : {filename}")
+
+        # --- Affichage du rapport complet ---
+        st.markdown("---")
+        st.markdown(f"### Rapport : **{rapport_path.stem.replace('_', ' ')}**")
+        st.markdown(contenu, unsafe_allow_html=True)
+
+    else:
+        st.error(f"Le fichier {rapport_path.name} est introuvable.")
+else:
+    st.info("Sélectionnez un rapport à consulter ci-dessus.")
