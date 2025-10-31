@@ -22,8 +22,8 @@
 L’application permet à la fois d’**explorer**, **visualiser**, **prédire** et **comparer** les performances énergétiques des logements en temps réel grâce à l’API officielle de l’ADEME.
 
 ###  Déploiement en ligne
-**Application Streamlit** : [https://riadshrn-streamlit-dpe-app.hf.space/](https://riadshrn-streamlit-dpe-app.hf.space/) 
-**API FastAPI** : [https://riadshrn-api-dpe-conso.hf.space/docs](https://riadshrn-api-dpe-conso.hf.space/docs) 
+- **Application Streamlit** : [https://riadshrn-streamlit-dpe-app.hf.space/](https://riadshrn-streamlit-dpe-app.hf.space/) 
+- **API FastAPI** : [https://riadshrn-api-dpe-conso.hf.space/docs](https://riadshrn-api-dpe-conso.hf.space/docs) 
 
 
 ---
