@@ -117,61 +117,9 @@ L’application permet à la fois d’**explorer**, **visualiser**, **prédire**
 
 ## Schéma général de l’écosystème applicatif
 
-```mermaid
-flowchart TD
-
-    subgraph DATA["Données externes"]
-        A1["ADEME API"] --> A
-        A2["ENEDIS API"] --> A
-        A["Données sources (ADEME / Enedis)"]
-    end
-
-    subgraph NOTEBOOK["Traitement & Modélisation"]
-        B1["Nettoyage & Fusion des données"]
-        B2["EDA (Analyse exploratoire)"]
-        B3["Modélisation Machine Learning"]
-        B4["3 modèles : 
-              • Prédiction conso
-              • DPE sans conso
-              • DPE avec conso"]
-        B1 --> B2 --> B3 --> B4
-    end
-
-    subgraph HF_MODELS["Déploiement modèles & données"]
-        M1["Modèles ML hébergés sur Hugging Face"]
-        M2["Jeu de données fusionné hébergé sur Hugging Face"]
-    end
-
-    subgraph API["API FastAPI (Backend)"]
-        F1["Endpoints /predict, /interpretation, /data_viz"]
-        F2["Appels aux modèles (Hugging Face)"]
-        F3["Intégration Mistral AI (LLM interprétation)"]
-        F1 --> F2 --> F3
-    end
-
-    subgraph APP["Interface Streamlit (Frontend)"]
-        S1["Visualisation (Plotly / Mapbox)"]
-        S2["Prédiction interactive via API"]
-        S3["Export CSV / PNG"]
-        S4["Affichage interprétation Mistral"]
-        S1 --> S2 --> S3 --> S4
-    end
-
-    subgraph USER["Utilisateur"]
-        U1["Exploration & Prédiction"]
-    end
-
-    %% Relations entre blocs
-    A --> NOTEBOOK
-    NOTEBOOK --> HF_MODELS
-    HF_MODELS --> API
-    USER --> APP
-    API --> APP
-    APP --> API
-    APP --> USER
-    
-
-```
+<p align="center">
+  <img src="./img/flux_eco.png" alt="Schéma pipeline ADEME-Enedis-IRIS" width="100%">
+</p>
 
 ---
 
