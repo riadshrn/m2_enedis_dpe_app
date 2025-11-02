@@ -58,17 +58,9 @@ Ce n’est pas juste un modèle académique : c’est un prototype d’outil d�
 
 ### 2.2 Flux de traitement
 
-```mermaid
-graph LR
-A1[df_adem_existant_69.csv -<br> Données réelles ADEME API] --> D[df_adem_merge_69.csv]
-A2[df_adem_neuf_69.csv -<br> Données réelles ADEME API] --> D
-D --> C[df_adem_cleaned_69.csv -<br> Données nettoyées]
-C --> S[df_adem_enedis_iris_69.csv -<br> Fusion ADEME x Enedis x IRIS]
-X[df_enedis_69.csv -<br> API Enedis] --> Y[enedis_69_cleaned.csv -<br> Données nettoyées Enedis]
-Y --> S
-P[IRIS_RHONE -<br> API data.gouv] -. Jointure spatiale .-> C
-S --> H[Analyse et Modélisation DPE]
-``` 
+  <p align="center">
+    <img src="./resultats_notebooks/flux.png" alt="Distribution de la consommation énergétique totale" width="100%">
+  </p>  
 
 ### 2.3   Sources de données utilisées
 
